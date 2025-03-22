@@ -64,33 +64,40 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(18.0),
-          child: IconButton(
+        leading: IconButton(
             onPressed: appState.navigationBarToggle,
-            icon: Icon(Icons.menu)
+            icon: Icon(Icons.menu),
+            padding: EdgeInsets.symmetric(horizontal: 30),
           ),
-        ),
+
       ),
       body: Row(
         children: [
           SafeArea(
             child: NavigationRail(
-            destinations: [
-              NavigationRailDestination(icon: Icon(Icons.home), label: Text("Home")),
-              NavigationRailDestination(icon: Icon(Icons.access_time), label: Text("Consultas")),
-              NavigationRailDestination(icon: Icon(Icons.assignment_add), label: Text("Agendar Consulta"))
-            ], 
-            selectedIndex: selectedPage.index,
-            onDestinationSelected: (index) => setState(() {
-              selectedPage = SelectedPage.values[index];
-              print(selectedPage.name);
-            },
-          ), 
-          extended: appState.isExpanded, 
-        )
-      ),
-      Expanded(child: Container(child: page,))
+              destinations: [
+                NavigationRailDestination(
+                  icon: Icon(Icons.home), 
+                  label: Text("Home")
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.access_time), 
+                  label: Text("Consultas")
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.assignment_add),
+                  label: Text("Agendar Consulta")
+                )], 
+              selectedIndex: selectedPage.index,
+              onDestinationSelected: (index) => setState(() {
+                selectedPage = SelectedPage.values[index];
+                print(selectedPage.name);
+              },
+            ), 
+            extended: appState.isExpanded, 
+          )
+        ),
+        Expanded(child: Container(child: page,))
       ],
     ),
         
