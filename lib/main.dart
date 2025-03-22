@@ -24,9 +24,17 @@ class MainApp extends StatelessWidget {
   }
 }
 
-class MyAppState extends ChangeNotifier {}
+class MyAppState extends ChangeNotifier {
+  var isExpanded = false;
+  void navigationBarToggle() {
+    isExpanded = !isExpanded;
+    notifyListeners();
+  }
+}
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
+
   @override
   State<StatefulWidget> createState() => _MyHomePageState();
 }
@@ -42,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
     Widget page;
 
     switch(selectedPage) {
@@ -54,34 +63,39 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     return Scaffold(
+      appBar: AppBar(
+        leading: Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: IconButton(
+            onPressed: appState.navigationBarToggle,
+            icon: Icon(Icons.menu)
+          ),
+        ),
+      ),
       body: Row(
         children: [
           SafeArea(
             child: NavigationRail(
-              destinations: [
-                NavigationRailDestination(icon: Icon(Icons.home), label: Text("Home")),
-                NavigationRailDestination(icon: Icon(Icons.access_time), label: Text("Consultas")),
-                NavigationRailDestination(icon: Icon(Icons.assignment_add), label: Text("Agendar Consulta"))
-              ], 
-              selectedIndex: selectedPage.index,
-              onDestinationSelected: (index) => setState(() {
-                selectedPage = SelectedPage.values[index];
-                print(selectedPage.name);
-              },
-              
-            ),
-              
-            )
-          ),
-          Expanded(
-            child: Container(
-              child: page,
-              
-            )
-          )
-        ],
+            destinations: [
+              NavigationRailDestination(icon: Icon(Icons.home), label: Text("Home")),
+              NavigationRailDestination(icon: Icon(Icons.access_time), label: Text("Consultas")),
+              NavigationRailDestination(icon: Icon(Icons.assignment_add), label: Text("Agendar Consulta"))
+            ], 
+            selectedIndex: selectedPage.index,
+            onDestinationSelected: (index) => setState(() {
+              selectedPage = SelectedPage.values[index];
+              print(selectedPage.name);
+            },
+          ), 
+          extended: appState.isExpanded, 
+        )
       ),
+      Expanded(child: Container(child: page,))
+      ],
+    ),
+        
     );
+  
   }   
   
 }
