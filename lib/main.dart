@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:mobile/login.dart';
 
 void main() {
   runApp(const MainApp());
@@ -47,6 +48,7 @@ enum SelectedPage {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedPage = SelectedPage.appointments;
+  var loginPage = LoginPage();
 
   @override
   Widget build(BuildContext context) {
@@ -54,12 +56,13 @@ class _MyHomePageState extends State<MyHomePage> {
     Widget page;
 
     switch(selectedPage) {
+      case SelectedPage.home:
+        page = loginPage;
       case SelectedPage.appointments:
         page = Placeholder();
       case SelectedPage.newAppointment:
         page = Placeholder();
-      case SelectedPage.home:
-        page = Placeholder();
+
     }
 
     return Scaffold(

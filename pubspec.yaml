@@ -7,14 +7,18 @@ environment:
   sdk: ^3.7.2
 
 dependencies:
+  async: ^2.13.0
   flutter:
     sdk: flutter
-  provider: ^6.1.2
+  material_color_utilities: ^0.11.1
+  provider: ^6.1.4
+  animate_do: ^3.1.2
+  vm_service: ^15.0.0
 
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_lints: ^5.0.0
+## dev_dependencies:
+##  flutter_test:
+##    sdk: flutter
+##  flutter_lints: ^5.0.0
 
 flutter:
   uses-material-design: true
