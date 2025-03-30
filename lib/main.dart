@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/login.dart';
+import 'package:mobile/patient_form.dart';
 
 void main() {
   runApp(const MainApp());
@@ -49,6 +50,7 @@ enum SelectedPage {
 class _MyHomePageState extends State<MyHomePage> {
   var selectedPage = SelectedPage.appointments;
   var loginPage = LoginPage();
+  var patientFormPage = PatientForm();
 
   @override
   Widget build(BuildContext context) {
@@ -59,10 +61,9 @@ class _MyHomePageState extends State<MyHomePage> {
       case SelectedPage.home:
         page = loginPage;
       case SelectedPage.appointments:
-        page = Placeholder();
+        page = patientFormPage;
       case SelectedPage.newAppointment:
         page = Placeholder();
-
     }
 
     return Scaffold(
@@ -72,40 +73,45 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.menu),
             padding: EdgeInsets.symmetric(horizontal: 30),
           ),
-
-      ),
-      body: Row(
-        children: [
-          SafeArea(
-            child: NavigationRail(
-              destinations: [
-                NavigationRailDestination(
-                  icon: Icon(Icons.home), 
-                  label: Text("Home")
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.access_time), 
-                  label: Text("Consultas")
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.assignment_add),
-                  label: Text("Agendar Consulta")
-                )], 
-              selectedIndex: selectedPage.index,
-              onDestinationSelected: (index) => setState(() {
-                selectedPage = SelectedPage.values[index];
-                print(selectedPage.name);
-              },
-            ), 
-            extended: appState.isExpanded, 
-          )
         ),
-        Expanded(child: Container(child: page,))
-      ],
-    ),
+        body: Row(
+          children: [
+            SafeArea(
+              child: NavigationRail(
+                destinations: [
+                  NavigationRailDestination(
+                    icon: Icon(Icons.home), 
+                    label: Text("Home")
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.access_time), 
+                    label: Text("Consultas")
+                  ),
+                  NavigationRailDestination(
+                    icon: Icon(Icons.assignment_add),
+                    label: Text("Agendar Consulta")
+                  )
+                ], 
+                selectedIndex: selectedPage.index,
+                onDestinationSelected: (index) => setState(() {
+                  selectedPage = SelectedPage.values[index];
+                  print(selectedPage.name);
+                },
+              ), 
+              extended: appState.isExpanded, 
+            )
+          ),
+          Expanded(child: Container(child: page,))
+        ],
+      ),
         
     );
   
   }   
   
 }
+
+
+  
+
+
