@@ -5,7 +5,7 @@ import 'components/custom_text_input_field.dart';
 import 'components/custom_form_button.dart';
 import 'components/custom_form_title.dart';
 import 'components/custom_form_input_container.dart';
-import 'components/custom_input_block.dart';
+import 'components/custom_date_picker_input.dart';
 import 'components/drop_down_input.dart';
 
 
@@ -94,7 +94,7 @@ class _PatientFormState extends State<PatientForm> {
                             hintText: "Digite o CPF",
                             controller: cpfController,
                           ),
-                          CustomInputBlock(),
+                          CustomDatePickerInput(),
                           CustomDropDownButton()
                         ],
                       ),

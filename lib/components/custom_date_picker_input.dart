@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CustomInputBlock extends StatelessWidget {
-  const CustomInputBlock({
+class CustomDatePickerInput extends StatelessWidget {
+  const CustomDatePickerInput({
     super.key,
   });
 
