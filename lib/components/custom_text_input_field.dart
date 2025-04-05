@@ -4,11 +4,18 @@ class CustomTextInputField extends StatelessWidget {
   const CustomTextInputField({
     super.key,
     required this.hintText,
-    required this.controller
+    required this.controller,
+    required this.validator,
+    this.obscureText = false,
+    required this.onSaved
+
   });
 
   final String hintText;
   final TextEditingController controller;
+  final bool obscureText;
+  final String? Function(String?) validator;
+  final Function(String?) onSaved;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +28,8 @@ class CustomTextInputField extends StatelessWidget {
           )
         )
       ),
-      child: TextFormField(     
+      child: TextFormField(    
+        obscureText: obscureText, 
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: hintText,
@@ -29,12 +37,8 @@ class CustomTextInputField extends StatelessWidget {
             color: Colors.grey.shade700
           )
         ),
-        validator: (String? value) {
-            if (value == null || value.isEmpty) {
-              return "Preenchimento obrigatório";
-            }
-            return null;
-          },
+        validator: validator,
+        onSaved: onSaved,
         controller: controller,
       ),
     );
