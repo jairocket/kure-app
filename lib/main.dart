@@ -14,11 +14,12 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
-        child: MaterialApp(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: "Meu App",
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey)
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
         ),
         home: MyHomePage(),
       ),
@@ -41,11 +42,7 @@ class MyHomePage extends StatefulWidget {
   State<StatefulWidget> createState() => _MyHomePageState();
 }
 
-enum SelectedPage {
-  home,
-  appointments,
-  newAppointment
-}
+enum SelectedPage { home, appointments, newAppointment }
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedPage = SelectedPage.appointments;
@@ -57,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var appState = context.watch<MyAppState>();
     Widget page;
 
-    switch(selectedPage) {
+    switch (selectedPage) {
       case SelectedPage.home:
         page = loginPage;
       case SelectedPage.appointments:
@@ -69,49 +66,41 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-            onPressed: appState.navigationBarToggle,
-            icon: Icon(Icons.menu),
-            padding: EdgeInsets.symmetric(horizontal: 30),
-          ),
+          onPressed: appState.navigationBarToggle,
+          icon: Icon(Icons.menu),
+          padding: EdgeInsets.symmetric(horizontal: 30),
         ),
-        body: Row(
-          children: [
-            SafeArea(
-              child: NavigationRail(
-                destinations: [
-                  NavigationRailDestination(
-                    icon: Icon(Icons.home), 
-                    label: Text("Home")
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.access_time), 
-                    label: Text("Consultas")
-                  ),
-                  NavigationRailDestination(
-                    icon: Icon(Icons.assignment_add),
-                    label: Text("Agendar Consulta")
-                  )
-                ], 
-                selectedIndex: selectedPage.index,
-                onDestinationSelected: (index) => setState(() {
-                  selectedPage = SelectedPage.values[index];
-                  print(selectedPage.name);
-                },
-              ), 
-              extended: appState.isExpanded, 
-            )
+      ),
+      body: Row(
+        children: [
+          SafeArea(
+            child: NavigationRail(
+              destinations: [
+                NavigationRailDestination(
+                  icon: Icon(Icons.home),
+                  label: Text("Home"),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.access_time),
+                  label: Text("Consultas"),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.assignment_add),
+                  label: Text("Agendar Consulta"),
+                ),
+              ],
+              selectedIndex: selectedPage.index,
+              onDestinationSelected:
+                  (index) => setState(() {
+                    selectedPage = SelectedPage.values[index];
+                    print(selectedPage.name);
+                  }),
+              extended: appState.isExpanded,
+            ),
           ),
-          Expanded(child: Container(child: page,))
+          Expanded(child: Container(child: page)),
         ],
       ),
-        
     );
-  
-  }   
-  
+  }
 }
-
-
-  
-
-

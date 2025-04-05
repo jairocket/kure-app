@@ -7,12 +7,22 @@ class CustomDatePickerInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InputDatePickerFormField(
-      key: Key("birthday"),
-      firstDate: DateTime(1910), 
-      lastDate: DateTime(DateTime.now().year),
-      fieldLabelText: "Digite a data de nascimento",
-      onDateSubmitted: (value) {},
+    return Container(
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Color.fromRGBO(196, 135, 198, .3)
+          )
+        )
+      ),
+      child: InputDatePickerFormField(
+        key: Key("birthday"),
+        firstDate: DateTime(1910), 
+        lastDate: DateTime(DateTime.now().year),
+        fieldLabelText: "Digite a data de nascimento",
+        onDateSubmitted: (value) {},
+      ),
     );
   }
 }

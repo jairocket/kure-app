@@ -1,77 +1,66 @@
-
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/components/date_input.dart';
+import 'package:mobile/extensions/extensions.dart';
 import 'components/custom_text_input_field.dart';
-import 'components/custom_form_button.dart';
 import 'components/custom_form_title.dart';
 import 'components/custom_form_input_container.dart';
-import 'components/custom_date_picker_input.dart';
 import 'components/drop_down_input.dart';
 
+final TextEditingController firstNameController = TextEditingController();
+final TextEditingController lastNameController = TextEditingController();
+final TextEditingController cpfController = TextEditingController();
+final TextEditingController phoneController = TextEditingController();
+final TextEditingController birthdayController = TextEditingController();
 
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController cpfController = TextEditingController();
-
-class PatientForm extends StatefulWidget{
+class PatientForm extends StatefulWidget {
   const PatientForm({super.key});
-  
+
   @override
-  State<StatefulWidget> createState() => _PatientFormState(); 
+  State<StatefulWidget> createState() => _PatientFormState();
 }
+
+const List<String> genderOptions = <String>['F', 'M', 'N'];
+String? firstName, lastName, cpf, phoneNumber;
+String gender = genderOptions.first;
+DateTime? birthday;
 
 class Patient {
   final String name;
   final String cpf;
 
-  Patient(
-    this.name,
-    this.cpf,
-  );
-
-
-}
-
-class FormState extends ChangeNotifier {
-  onPressed() {
-    print("presssed");
-  }
-  
-
-
+  Patient(this.name, this.cpf);
 }
 
 class _PatientFormState extends State<PatientForm> {
+Future<void> selectDate() async {
+  DateTime? _picked = await showDatePicker(
+    context: context, 
+    firstDate: DateTime(1914), 
+    lastDate: DateTime.now()
+  );
 
-  
+  if(_picked != null) {
+    print(_picked.toString().split(" ")[0]);
+    setState(() {
+      birthdayController.text = _picked.toString().split(" ")[0];
+    });
+  }
+}
+
+
+  final _formkey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 400,
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: -40,
-                    height: 400,
-                    width: width,
-                    child: FadeInUp(
-                      duration: Duration(seconds: 1),
-                      child: Container(
-                        // inserir imagem
-                      )
-                    )
-                  ),
-                ],
-              ),
-            ),
+            SizedBox(height: 30),
             Form(
+              key: _formkey,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 40),
                 child: Column(
@@ -80,7 +69,7 @@ class _PatientFormState extends State<PatientForm> {
                     FadeInUp(
                       duration: Duration(microseconds: 1500),
                       child: CustomFormTitle(title: "Cadastrar novo Paciente"),
-                    ),            
+                    ),
                     SizedBox(height: 30),
                     FadeInUp(
                       duration: Duration(milliseconds: 1700),
@@ -88,24 +77,112 @@ class _PatientFormState extends State<PatientForm> {
                         inputFields: [
                           CustomTextInputField(
                             hintText: "Digite o nome",
-                            controller: nameController
+                            controller: firstNameController,
+                            validator: (value) {
+                              if (!value!.isValidPatientName) {
+                                return "Digite um nome válido";
+                              }
+                              return null;
+                            },
+                            onSaved:
+                                (value) => setState(() {
+                                  firstName = value;
+                                }),
+                          ),
+                          CustomTextInputField(
+                            hintText: "Digite o sobrenome",
+                            controller: lastNameController,
+                            validator: (value) {
+                              if (!value!.isValidPatientName) {
+                                return "Digite um sobrenome válido";
+                              }
+                              return null;
+                            },
+                            onSaved:
+                                (value) => setState(() {
+                                  lastName = value;
+                                }),
                           ),
                           CustomTextInputField(
                             hintText: "Digite o CPF",
                             controller: cpfController,
+                            validator: (value) {
+                              if (!value!.isCPFValid) {
+                                return "Digite um CPF válido. Apenas números.";
+                              }
+                              return null;
+                            },
+                            onSaved:
+                                (value) => setState(() {
+                                  cpf = value;
+                                }),
                           ),
-                          CustomDatePickerInput(),
-                          CustomDropDownButton()
+                          CustomTextInputField(
+                            hintText: "Digite o telefone",
+                            controller: phoneController,
+                            validator: (value) {
+                              if (!value!.isValidPhone) {
+                                return "Digite um número válido. Apenas números.";
+                              }
+                              return null;
+                            },
+                            onSaved:
+                                (value) => setState(() {
+                                  phoneNumber = value;
+                                }),
+                          ),
+                          CustomDateInput(
+                            controller: birthdayController,
+                            labelText: 'Data de nascimento',
+                            validator: (value) {
+                              if (!value!.isValidPatientName) {
+                                return "Digite data válida";
+                              }
+                              return null;
+                            },
+                            onTap: selectDate,
+                            onSaved:
+                                (value) => setState(() {
+                                  birthday = DateTime.parse(birthdayController.text);
+                                }),
+                          ),
+                          CustomDropDownButton(
+                            value: gender,
+                            onChanged: (String? value) {
+                              setState(() {
+                                gender = value!;
+                              });
+                            },
+                          ),
                         ],
                       ),
                     ),
                     SizedBox(height: 30),
                     FadeInUp(
-                      duration: Duration(
-                        milliseconds: 1900
+                      duration: Duration(milliseconds: 1900),
+                      child: MaterialButton(
+                        onPressed: () {
+                          if (_formkey.currentState!.validate()) {
+                            _formkey.currentState!.save();
+                            print(
+                              "Patient ${firstName} ${lastName}, ${phoneNumber}, ${cpf}, ${gender} ${birthday}",
+                            );
+                          }
+                        },
+                        color: Color.fromRGBO(49, 39, 79, 1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        height: 50,
+                        child: Center(
+                          child: Text(
+                            "Salvar",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ),
-                      child: CustomFormButton(buttonLabel: "Salvar")
                     ),
+                    SizedBox(height: 100),
                   ],
                 ),
               ),
@@ -115,8 +192,4 @@ class _PatientFormState extends State<PatientForm> {
       ),
     );
   }
-
 }
-
-
-
