@@ -14,9 +14,12 @@ class CustomDropDownButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text("Gênero"),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Text("Gênero"),
+        ),
         SizedBox(width: 30),
         DropdownButton<String>(
           padding: EdgeInsets.all(10),

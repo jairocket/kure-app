@@ -98,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
               extended: appState.isExpanded,
             ),
           ),
-          Expanded(child: Container(child: page)),
+          Expanded(child: page),
         ],
       ),
     );

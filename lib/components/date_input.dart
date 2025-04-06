@@ -7,9 +7,9 @@ class CustomDateInput extends StatelessWidget {
     required this.validator,
     required this.onSaved,
     required this.labelText,
-    required this.onTap
+    required this.onTap,
   });
-    final String labelText;
+  final String labelText;
   final TextEditingController controller;
   final String? Function(String?) validator;
   final Function(String?) onSaved;
@@ -17,18 +17,20 @@ class CustomDateInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10.0),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Color.fromRGBO(196, 135, 198, .3)),
+        ),
+      ),
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.only(left: 10),
           labelText: labelText,
           enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey.shade700),
-          ),
+          focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
         ),
         onTap: onTap,
         readOnly: true,
@@ -36,6 +38,4 @@ class CustomDateInput extends StatelessWidget {
       ),
     );
   }
-
-
 }
