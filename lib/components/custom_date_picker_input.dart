@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class CustomDatePickerInput extends StatelessWidget {
   const CustomDatePickerInput({
@@ -21,7 +22,9 @@ class CustomDatePickerInput extends StatelessWidget {
         firstDate: DateTime(1910), 
         lastDate: DateTime(DateTime.now().year),
         fieldLabelText: "Digite a data de nascimento",
-        onDateSubmitted: (value) {},
+        onDateSubmitted: (value) {
+          DateFormat('dd/MM/yyyy').parse(value.toString());
+        },
       ),
     );
   }
