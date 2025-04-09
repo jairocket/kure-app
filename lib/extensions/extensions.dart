@@ -17,13 +17,12 @@ extension ExtString on String {
   }
 
   bool get isCPFValid {
-    final regExp = RegExp(r"^[0-9]{11}");
-    return regExp.hasMatch(this) && this.length == 11;
+    final regExp = RegExp(r"^[0-9]{3}.[0-9]{3}.[0-9]{3}-[0-9]{2}");
+    return regExp.hasMatch(this) && this.length == 14;
   }
 
-  bool get isValidPhone {
-    final regExp = RegExp(r"^\+?0[0-9]{10}$");
-    return regExp.hasMatch(this);
+  bool get isValidPhone {  
+    return this.length == 15;
   }
 
   bool get isGenderInputInvalid {   

@@ -8,14 +8,17 @@ import 'components/custom_form_title.dart';
 import 'components/custom_form_input_container.dart';
 import 'components/drop_down_input.dart';
 import 'package:intl/intl.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-//mask_text_input_formatter #
 
 final TextEditingController firstNameController = TextEditingController();
 final TextEditingController lastNameController = TextEditingController();
 final TextEditingController cpfController = TextEditingController();
 final TextEditingController phoneController = TextEditingController();
 final TextEditingController birthdayController = TextEditingController();
+  final _cpfFormatter = MaskTextInputFormatter(mask: '###.###.###-##', filter: {"#": RegExp(r'[0-9]')});
+  final _cellPhoneFormater = MaskTextInputFormatter(mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')});
+  
 
 class PatientForm extends StatefulWidget {
   const PatientForm({super.key});
@@ -24,7 +27,7 @@ class PatientForm extends StatefulWidget {
   State<StatefulWidget> createState() => _PatientFormState();
 }
 
-const List<String> genderOptions = <String>['F', 'M', 'N'];
+const List<String> genderOptions = <String>['F', 'M'];
 String? firstName, lastName, cpf, phoneNumber;
 String gender = genderOptions.first;
 DateTime? birthday;
@@ -35,8 +38,6 @@ class Patient {
 
   Patient(this.name, this.cpf);
 }
-
-
 
 class _PatientFormState extends State<PatientForm> {
   
@@ -52,13 +53,11 @@ Future<void> selectDate() async {
   if(_picked != null) {
     print(DateFormat.yMd("pt_BR").format(_picked));
     setState(() {
-      birthdayController.text = DateFormat.yMd("pt_BR").format(_picked).toString().split(" ")[0];
+      birthday = _picked;
+      birthdayController.text = DateFormat.yMd("pt_BR").format(_picked);
     });
   }
 }
-
-//mask_text_input_formatter
-
 
   final _formkey = GlobalKey<FormState>();
   @override
@@ -89,6 +88,7 @@ Future<void> selectDate() async {
                           CustomTextInputField(
                             hintText: "Digite o nome",
                             controller: firstNameController,
+                            inputFormatters: [],
                             validator: (value) {
                               if (!value!.isValidPatientName) {
                                 return "Digite um nome válido";
@@ -103,6 +103,7 @@ Future<void> selectDate() async {
                           CustomTextInputField(
                             hintText: "Digite o sobrenome",
                             controller: lastNameController,
+                            inputFormatters: [],
                             validator: (value) {
                               if (!value!.isValidPatientName) {
                                 return "Digite um sobrenome válido";
@@ -117,12 +118,14 @@ Future<void> selectDate() async {
                           CustomTextInputField(
                             hintText: "Digite o CPF",
                             controller: cpfController,
+
                             validator: (value) {
                               if (!value!.isCPFValid) {
                                 return "Digite um CPF válido. Apenas números.";
                               }
                               return null;
                             },
+                            inputFormatters: [_cpfFormatter],
                             onSaved:
                                 (value) => setState(() {
                                   cpf = value;
@@ -131,6 +134,7 @@ Future<void> selectDate() async {
                           CustomTextInputField(
                             hintText: "Digite o telefone",
                             controller: phoneController,
+                            inputFormatters: [_cellPhoneFormater],
                             validator: (value) {
                               if (!value!.isValidPhone) {
                                 return "Digite um número válido. Apenas números.";
@@ -153,9 +157,7 @@ Future<void> selectDate() async {
                             },
                             onTap: selectDate,
                             onSaved:
-                                (value) => setState(() {
-                                  birthday = DateTime.parse(birthdayController.text);
-                                }),
+                                (value) => setState(() {}),
                           ),
                           CustomDropDownButton(
                             value: gender,
