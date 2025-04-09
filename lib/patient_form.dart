@@ -1,11 +1,15 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:mobile/components/date_input.dart';
 import 'package:mobile/extensions/extensions.dart';
 import 'components/custom_text_input_field.dart';
 import 'components/custom_form_title.dart';
 import 'components/custom_form_input_container.dart';
 import 'components/drop_down_input.dart';
+import 'package:intl/intl.dart';
+
+//mask_text_input_formatter #
 
 final TextEditingController firstNameController = TextEditingController();
 final TextEditingController lastNameController = TextEditingController();
@@ -32,7 +36,10 @@ class Patient {
   Patient(this.name, this.cpf);
 }
 
+
+
 class _PatientFormState extends State<PatientForm> {
+  
 Future<void> selectDate() async {
   DateTime? _picked = await showDatePicker(
     context: context, 
@@ -40,13 +47,17 @@ Future<void> selectDate() async {
     lastDate: DateTime.now()
   );
 
+  initializeDateFormatting("pt_BR", null);
+
   if(_picked != null) {
-    print(_picked.toString().split(" ")[0]);
+    print(DateFormat.yMd("pt_BR").format(_picked));
     setState(() {
-      birthdayController.text = _picked.toString().split(" ")[0];
+      birthdayController.text = DateFormat.yMd("pt_BR").format(_picked).toString().split(" ")[0];
     });
   }
 }
+
+//mask_text_input_formatter
 
 
   final _formkey = GlobalKey<FormState>();
