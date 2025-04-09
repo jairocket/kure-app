@@ -24,7 +24,7 @@ class PatientForm extends StatefulWidget {
   State<StatefulWidget> createState() => _PatientFormState();
 }
 
-const List<String> genderOptions = <String>['F', 'M'];
+const List<String> genderOptions = <String>['F', 'M', 'N'];
 String? firstName, lastName, cpf, phoneNumber;
 String gender = genderOptions.first;
 DateTime? birthday;
@@ -50,8 +50,9 @@ Future<void> selectDate() async {
   initializeDateFormatting("pt_BR", null);
 
   if(_picked != null) {
+    print(DateFormat.yMd("pt_BR").format(_picked));
     setState(() {
-      birthdayController.text = DateFormat.yMd("pt_BR").format(_picked);
+      birthdayController.text = DateFormat.yMd("pt_BR").format(_picked).toString().split(" ")[0];
     });
   }
 }
