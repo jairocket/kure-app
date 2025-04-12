@@ -35,6 +35,7 @@ class CustomDateInput extends StatelessWidget {
         onTap: onTap,
         readOnly: true,
         onSaved: onSaved,
+        validator: validator,
       ),
     );
   }
