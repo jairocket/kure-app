@@ -12,7 +12,7 @@ extension ExtString on String {
   }
 
   bool get isValidPatientName {
-    final regExp = RegExp(r"^[A-Z][a-z]");
+    final regExp = RegExp(r"\w");
     return regExp.hasMatch(this) && this.length > 1;
   }
 

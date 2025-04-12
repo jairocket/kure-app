@@ -1,24 +1,29 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:mobile/components/custom_gender_options.dart';
 import 'package:mobile/components/date_input.dart';
 import 'package:mobile/extensions/extensions.dart';
 import 'components/custom_text_input_field.dart';
 import 'components/custom_form_title.dart';
 import 'components/custom_form_input_container.dart';
-import 'components/drop_down_input.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-
 
 final TextEditingController firstNameController = TextEditingController();
 final TextEditingController lastNameController = TextEditingController();
 final TextEditingController cpfController = TextEditingController();
 final TextEditingController phoneController = TextEditingController();
 final TextEditingController birthdayController = TextEditingController();
-  final _cpfFormatter = MaskTextInputFormatter(mask: '###.###.###-##', filter: {"#": RegExp(r'[0-9]')});
-  final _cellPhoneFormater = MaskTextInputFormatter(mask: '(##) #####-####', filter: {"#": RegExp(r'[0-9]')});
-  
+final TextEditingController genderController = TextEditingController();
+final _cpfFormatter = MaskTextInputFormatter(
+  mask: '###.###.###-##',
+  filter: {"#": RegExp(r'[0-9]')},
+);
+final _cellPhoneFormater = MaskTextInputFormatter(
+  mask: '(##) #####-####',
+  filter: {"#": RegExp(r'[0-9]')},
+);
 
 class PatientForm extends StatefulWidget {
   const PatientForm({super.key});
@@ -27,39 +32,49 @@ class PatientForm extends StatefulWidget {
   State<StatefulWidget> createState() => _PatientFormState();
 }
 
-const List<String> genderOptions = <String>['F', 'M'];
 String? firstName, lastName, cpf, phoneNumber;
-String gender = genderOptions.first;
+String gender = "";
 DateTime? birthday;
 
 class Patient {
-  final String name;
+  final String firstName;
+  final String lastName;
   final String cpf;
+  final String phoneNumber;
+  final String gender;
 
-  Patient(this.name, this.cpf);
+  Patient(
+    this.firstName,
+    this.lastName,
+    this.cpf,
+    this.phoneNumber,
+    this.gender,
+  );
 }
 
 class _PatientFormState extends State<PatientForm> {
-  
-Future<void> selectDate() async {
-  DateTime? _picked = await showDatePicker(
-    context: context, 
-    firstDate: DateTime(1914), 
-    lastDate: DateTime.now()
-  );
+  Future<void> selectDate() async {
+    DateTime? _picked = await showDatePicker(
+      context: context,
+      firstDate: DateTime(1914),
+      lastDate: DateTime.now(),
+    );
 
-  initializeDateFormatting("pt_BR", null);
+    initializeDateFormatting("pt_BR", null);
 
-  if(_picked != null) {
-    print(DateFormat.yMd("pt_BR").format(_picked));
-    setState(() {
-      birthday = _picked;
-      birthdayController.text = DateFormat.yMd("pt_BR").format(_picked);
-    });
+    if (_picked != null) {
+      print(DateFormat.yMd("pt_BR").format(_picked));
+      setState(() {
+        birthday = _picked;
+        birthdayController.text = DateFormat.yMd("pt_BR").format(_picked);
+      });
+    }
   }
-}
 
   final _formkey = GlobalKey<FormState>();
+
+  bool _showGenderWarning = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +112,11 @@ Future<void> selectDate() async {
                             },
                             onSaved:
                                 (value) => setState(() {
-                                  firstName = value;
+                                  if (value != null) {
+                                    firstName =
+                                        value[0].toUpperCase() +
+                                        value.substring(1);
+                                  }
                                 }),
                           ),
                           CustomTextInputField(
@@ -112,13 +131,16 @@ Future<void> selectDate() async {
                             },
                             onSaved:
                                 (value) => setState(() {
-                                  lastName = value;
+                                  if (value != null) {
+                                    lastName =
+                                        value[0].toUpperCase() +
+                                        value.substring(1);
+                                  }
                                 }),
                           ),
                           CustomTextInputField(
                             hintText: "Digite o CPF",
                             controller: cpfController,
-
                             validator: (value) {
                               if (!value!.isCPFValid) {
                                 return "Digite um CPF válido. Apenas números.";
@@ -146,27 +168,37 @@ Future<void> selectDate() async {
                                   phoneNumber = value;
                                 }),
                           ),
+
                           CustomDateInput(
                             controller: birthdayController,
                             labelText: 'Data de nascimento',
                             validator: (value) {
                               if (!value!.isValidPatientName) {
-                                return "Digite data válida";
+                                return "Selecione a data de nascimento";
                               }
                               return null;
                             },
                             onTap: selectDate,
-                            onSaved:
-                                (value) => setState(() {}),
+                            onSaved: (value) => setState(() {}),
                           ),
-                          CustomDropDownButton(
-                            value: gender,
-                            onChanged: (String? value) {
+                          GenderButton(
+                            onChangedGenderButton: (String? value) {
                               setState(() {
                                 gender = value!;
                               });
                             },
                           ),
+                          if (_showGenderWarning)
+                            Padding(
+                              padding: EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                "Escolha uma opção",
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 12.0,
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -175,7 +207,18 @@ Future<void> selectDate() async {
                       duration: Duration(milliseconds: 1900),
                       child: MaterialButton(
                         onPressed: () {
-                          if (_formkey.currentState!.validate()) {
+                          if (gender.isEmpty) {
+                            setState(() {
+                              _showGenderWarning = true;
+                            });
+                          } else {
+                             setState(() {
+                              _showGenderWarning = false;
+                            });
+
+                          }
+                          if (_formkey.currentState!.validate() &&
+                              !_showGenderWarning) {
                             _formkey.currentState!.save();
                             print(
                               "Patient ${firstName} ${lastName}, ${phoneNumber}, ${cpf}, ${gender} ${birthday}",
