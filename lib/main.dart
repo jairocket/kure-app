@@ -28,11 +28,7 @@ class MainApp extends StatelessWidget {
 }
 
 class MyAppState extends ChangeNotifier {
-  var isExpanded = false;
-  void navigationBarToggle() {
-    isExpanded = !isExpanded;
-    notifyListeners();
-  }
+
 }
 
 class MyHomePage extends StatefulWidget {
@@ -42,65 +38,87 @@ class MyHomePage extends StatefulWidget {
   State<StatefulWidget> createState() => _MyHomePageState();
 }
 
-enum SelectedPage { home, appointments, newAppointment }
+enum SelectedPage { home, appointments, newAppointment, newPatient }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var selectedPage = SelectedPage.appointments;
+  var selectedPage = SelectedPage.home;
   var loginPage = LoginPage();
   var patientFormPage = PatientForm();
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
     Widget page;
 
     switch (selectedPage) {
       case SelectedPage.home:
         page = loginPage;
       case SelectedPage.appointments:
-        page = patientFormPage;
+        page = Placeholder();
       case SelectedPage.newAppointment:
         page = Placeholder();
+      case SelectedPage.newPatient:
+        page = patientFormPage;
     }
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: appState.navigationBarToggle,
-          icon: Icon(Icons.menu),
-          padding: EdgeInsets.symmetric(horizontal: 30),
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              onPressed: Scaffold.of(context).openDrawer,
+              icon: Icon(Icons.menu),
+              padding: EdgeInsets.symmetric(horizontal: 30),
+            );
+          },
         ),
       ),
-      body: Row(
-        children: [
-          SafeArea(
-            child: NavigationRail(
-              destinations: [
-                NavigationRailDestination(
-                  icon: Icon(Icons.home),
-                  label: Text("Home"),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.access_time),
-                  label: Text("Consultas"),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.assignment_add),
-                  label: Text("Agendar Consulta"),
-                ),
-              ],
-              selectedIndex: selectedPage.index,
-              onDestinationSelected:
-                  (index) => setState(() {
-                    selectedPage = SelectedPage.values[index];
-                    print(selectedPage.name);
+      drawer: Builder(
+        builder: (context) {
+          return Drawer(
+            child: ListView(
+              children: [
+                const DrawerHeader(child: Text("Menu")),
+                ListTile(
+                  title: Text("Home"),
+                  leading: Icon(Icons.home),
+                  onTap: () => setState(() {
+                    selectedPage = SelectedPage.home;
+                    Scaffold.of(context).closeDrawer();
                   }),
-              extended: appState.isExpanded,
+                ),
+                ListTile(
+                  title: Text("Cadastrar Paciente"),
+                  leading: Icon(Icons.person_add),
+                  onTap: () => setState(() {
+                    selectedPage = SelectedPage.newPatient;
+                    Scaffold.of(context).closeDrawer();
+                  }),
+                ),
+                ListTile(
+                  title: Text("Nova Consulta"),
+                  leading: Icon(Icons.assignment_add),
+                  onTap: () => setState(() {
+                    selectedPage = SelectedPage.newAppointment;
+                    Scaffold.of(context).closeDrawer();
+                  }),
+                ),
+                ListTile(
+                  title: Text("Consultas"),
+                  leading: Icon(Icons.access_time),
+                  onTap: () => setState(() {
+                    selectedPage = SelectedPage.appointments;
+                    Scaffold.of(context).closeDrawer();
+                  }),
+                )
+          
+             
+              ],
             ),
-          ),
-          Expanded(child: page),
-        ],
+          );
+        }
       ),
+
+      body: Column(children: [Expanded(child: page)]),
     );
   }
 }
