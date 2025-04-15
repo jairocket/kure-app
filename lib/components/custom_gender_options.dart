@@ -1,7 +1,7 @@
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/material.dart';
 
-enum GenderOptions { masculino, feminino, outro }
+enum GenderOptions { masculino, feminino }
 
 class GenderButton extends StatelessWidget {
   const GenderButton({
