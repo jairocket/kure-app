@@ -37,6 +37,7 @@ String gender = "";
 DateTime? birthday;
 
 class Patient {
+  final int id;
   final String firstName;
   final String lastName;
   final String cpf;
@@ -44,12 +45,29 @@ class Patient {
   final String gender;
 
   Patient(
+    this.id,
     this.firstName,
     this.lastName,
     this.cpf,
     this.phoneNumber,
     this.gender,
   );
+
+  Map<String, Object?> toMap() {
+    return {
+      'id': id,
+      'firstName': firstName,
+      'lastName': lastName,
+      'cpf': cpf,
+      'phoneNumber': phoneNumber,
+      'gender': gender,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'Patient {id: ${id}, name: ${firstName} ${lastName}, phoneNumber: ${phoneNumber}, cpf: ${cpf}, gender: ${gender} ${birthday}}';
+  }
 }
 
 class _PatientFormState extends State<PatientForm> {
@@ -101,7 +119,7 @@ class _PatientFormState extends State<PatientForm> {
                       child: CustomFormInputContainer(
                         inputFields: [
                           CustomTextInputField(
-                            hintText: "Digite o nome",
+                            hintText: "Digite o nome completo",
                             controller: firstNameController,
                             inputFormatters: [],
                             validator: (value) {
@@ -212,10 +230,9 @@ class _PatientFormState extends State<PatientForm> {
                               _showGenderWarning = true;
                             });
                           } else {
-                             setState(() {
+                            setState(() {
                               _showGenderWarning = false;
                             });
-
                           }
                           if (_formkey.currentState!.validate() &&
                               !_showGenderWarning) {
