@@ -1,7 +1,7 @@
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/material.dart';
 
-enum GenderOptions { masculino, feminino }
+enum GenderOptions { Masculino, Feminino, Outro }
 
 class GenderButton extends StatelessWidget {
   const GenderButton({
@@ -34,8 +34,8 @@ class GenderButton extends StatelessWidget {
                 unSelectedColor: Color.fromARGB(255, 249, 248, 248),
                 selectedColor: Color.fromRGBO(117, 107, 146, 1),
                 wrapAlignment: WrapAlignment.spaceAround,
-                spacing: 5,
-                padding: 10,
+                spacing: 3.5,
+                padding: 5.5,
                 enableShape: true,
                 autoWidth: true,
               ),

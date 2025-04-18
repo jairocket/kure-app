@@ -4,22 +4,24 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:mobile/components/custom_gender_options.dart';
 import 'package:mobile/components/date_input.dart';
 import 'package:mobile/extensions/extensions.dart';
+import 'package:mobile/services/database_service.dart';
 import 'components/custom_text_input_field.dart';
 import 'components/custom_form_title.dart';
 import 'components/custom_form_input_container.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-final TextEditingController firstNameController = TextEditingController();
-final TextEditingController lastNameController = TextEditingController();
+final TextEditingController nameController = TextEditingController();
 final TextEditingController cpfController = TextEditingController();
 final TextEditingController phoneController = TextEditingController();
 final TextEditingController birthdayController = TextEditingController();
 final TextEditingController genderController = TextEditingController();
+
 final _cpfFormatter = MaskTextInputFormatter(
   mask: '###.###.###-##',
   filter: {"#": RegExp(r'[0-9]')},
 );
+
 final _cellPhoneFormater = MaskTextInputFormatter(
   mask: '(##) #####-####',
   filter: {"#": RegExp(r'[0-9]')},
@@ -32,45 +34,15 @@ class PatientForm extends StatefulWidget {
   State<StatefulWidget> createState() => _PatientFormState();
 }
 
-String? firstName, lastName, cpf, phoneNumber;
-String gender = "";
-DateTime? birthday;
+String? name, cpf, phoneNumber, gender, birthday;
+bool _showGenderWarning = false;
 
-class Patient {
-  final int id;
-  final String firstName;
-  final String lastName;
-  final String cpf;
-  final String phoneNumber;
-  final String gender;
-
-  Patient(
-    this.id,
-    this.firstName,
-    this.lastName,
-    this.cpf,
-    this.phoneNumber,
-    this.gender,
-  );
-
-  Map<String, Object?> toMap() {
-    return {
-      'id': id,
-      'firstName': firstName,
-      'lastName': lastName,
-      'cpf': cpf,
-      'phoneNumber': phoneNumber,
-      'gender': gender,
-    };
-  }
-
-  @override
-  String toString() {
-    return 'Patient {id: ${id}, name: ${firstName} ${lastName}, phoneNumber: ${phoneNumber}, cpf: ${cpf}, gender: ${gender} ${birthday}}';
-  }
-}
 
 class _PatientFormState extends State<PatientForm> {
+  final _formkey = GlobalKey<FormState>();
+
+  final DatabaseService _databaseService = DatabaseService.instance;
+
   Future<void> selectDate() async {
     DateTime? _picked = await showDatePicker(
       context: context,
@@ -81,17 +53,12 @@ class _PatientFormState extends State<PatientForm> {
     initializeDateFormatting("pt_BR", null);
 
     if (_picked != null) {
-      print(DateFormat.yMd("pt_BR").format(_picked));
       setState(() {
-        birthday = _picked;
+        birthday = DateFormat.yMd("pt_BR").format(_picked);
         birthdayController.text = DateFormat.yMd("pt_BR").format(_picked);
       });
     }
   }
-
-  final _formkey = GlobalKey<FormState>();
-
-  bool _showGenderWarning = false;
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +87,7 @@ class _PatientFormState extends State<PatientForm> {
                         inputFields: [
                           CustomTextInputField(
                             hintText: "Digite o nome completo",
-                            controller: firstNameController,
+                            controller: nameController,
                             inputFormatters: [],
                             validator: (value) {
                               if (!value!.isValidPatientName) {
@@ -131,26 +98,7 @@ class _PatientFormState extends State<PatientForm> {
                             onSaved:
                                 (value) => setState(() {
                                   if (value != null) {
-                                    firstName =
-                                        value[0].toUpperCase() +
-                                        value.substring(1);
-                                  }
-                                }),
-                          ),
-                          CustomTextInputField(
-                            hintText: "Digite o sobrenome",
-                            controller: lastNameController,
-                            inputFormatters: [],
-                            validator: (value) {
-                              if (!value!.isValidPatientName) {
-                                return "Digite um sobrenome válido";
-                              }
-                              return null;
-                            },
-                            onSaved:
-                                (value) => setState(() {
-                                  if (value != null) {
-                                    lastName =
+                                    name =
                                         value[0].toUpperCase() +
                                         value.substring(1);
                                   }
@@ -186,7 +134,6 @@ class _PatientFormState extends State<PatientForm> {
                                   phoneNumber = value;
                                 }),
                           ),
-
                           CustomDateInput(
                             controller: birthdayController,
                             labelText: 'Data de nascimento',
@@ -207,15 +154,21 @@ class _PatientFormState extends State<PatientForm> {
                             },
                           ),
                           if (_showGenderWarning)
-                            Padding(
-                              padding: EdgeInsets.only(top: 8.0),
-                              child: Text(
-                                "Escolha uma opção",
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12.0,
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.only(top: 8.0, left: 10.0, bottom: 8.0),
+                                  child: Text(
+                                    "Escolha uma opção",
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 12.0,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                         ],
                       ),
@@ -225,7 +178,7 @@ class _PatientFormState extends State<PatientForm> {
                       duration: Duration(milliseconds: 1900),
                       child: MaterialButton(
                         onPressed: () {
-                          if (gender.isEmpty) {
+                          if (gender == null) {
                             setState(() {
                               _showGenderWarning = true;
                             });
@@ -234,11 +187,16 @@ class _PatientFormState extends State<PatientForm> {
                               _showGenderWarning = false;
                             });
                           }
-                          if (_formkey.currentState!.validate() &&
-                              !_showGenderWarning) {
+                          if (
+                            _formkey.currentState!.validate() &&
+                              !_showGenderWarning
+                            ) {
                             _formkey.currentState!.save();
+
+                            _databaseService.savePatient(name!, cpf!, phoneNumber!, birthday!, gender!);
+                          
                             print(
-                              "Patient ${firstName} ${lastName}, ${phoneNumber}, ${cpf}, ${gender} ${birthday}",
+                              "Patient { ${name}, ${phoneNumber}, ${cpf}, ${gender}, ${birthday} }",
                             );
                           }
                         },

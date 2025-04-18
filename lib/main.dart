@@ -2,26 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/login.dart';
 import 'package:mobile/patient_form.dart';
-import 'dart:async';
-import 'package:flutter/widgets.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
 
-void main() async {
+
+void main() {
   runApp(const MainApp());
-
-  WidgetsFlutterBinding.ensureInitialized();
-
-  final database = openDatabase(
-    join(await getDatabasesPath(), 'k_database.db'),
-
-    onCreate: (db, version) {
-      return db.execute(
-        'CREATE TABLE patient(id INTEGER PRIMARY KEY, name TEXT, cpf TEXT, phone TEXT, birthday DATE)',
-      );
-    },
-    version: 1,
-  );
 }
 
 class MainApp extends StatelessWidget {
@@ -33,7 +17,7 @@ class MainApp extends StatelessWidget {
       create: (context) => MyAppState(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: "Meu App",
+        title: "K App",
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
