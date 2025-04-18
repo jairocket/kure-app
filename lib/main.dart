@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/consulta.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/login.dart';
 import 'package:mobile/patient_form.dart';
@@ -44,6 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var selectedPage = SelectedPage.home;
   var loginPage = LoginPage();
   var patientFormPage = PatientForm();
+  var consultaFormPage= AgendamentoConsultaPage();
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case SelectedPage.appointments:
         page = Placeholder();
       case SelectedPage.newAppointment:
-        page = Placeholder();
+        page = consultaFormPage;
       case SelectedPage.newPatient:
         page = patientFormPage;
     }
