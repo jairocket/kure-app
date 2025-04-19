@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/consulta.dart';
+import 'package:mobile/services/database_service.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/login.dart';
 import 'package:mobile/patient_form.dart';
@@ -7,6 +8,7 @@ import 'package:mobile/patient_form.dart';
 
 void main() {
   runApp(const MainApp());
+
 }
 
 class MainApp extends StatelessWidget {

@@ -25,14 +25,15 @@ class DatabaseService {
   Future<Database> getDatabase() async {
     final databaseDirectoryPath = await getDatabasesPath();
     final databasePath = join(databaseDirectoryPath, 'k_database.db');
+    await deleteDatabase(databasePath);
 
-    final database = openDatabase(
+    final database = await openDatabase(
       databasePath,
       version: 1,
-      onCreate: (db, version) {
-        db.execute('''
-            CREATE TABLE $_patientsTableName IF NOT EXISTS (
-              $_patientsIdColumnName INT PRIMARY KEY NOT NULL, 
+      onCreate: (db, version) async {
+        await db.execute('''
+            CREATE TABLE IF NOT EXISTS $_patientsTableName (
+              $_patientsIdColumnName INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
               $_patientsNameColumnName TEXT NOT NULL, 
               $_patientsCPFColumnName TEXT UNIQUE NOT NULL, 
               $_patientsPhoneColumnName TEXT NOT NULL, 
@@ -61,7 +62,8 @@ class DatabaseService {
         _patientsPhoneColumnName: phone,
         _patientsBirthdayColumnName: birthday,
         _patientsGenderColumnName: gender
-      }
+      },
+      conflictAlgorithm: ConflictAlgorithm.abort
     );
   }
 
