@@ -12,45 +12,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(
-              height: 400,
-              child: Stack(
-                children: <Widget>[
-                  Positioned(
-                    top: -40,
-                    height: 400,
-                    width: width,
-                    child: FadeInUp(duration: Duration(seconds: 1), child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/background.png'),
-                          fit: BoxFit.fill
-                        )
-                      ),
-                    )),
-                  ),
-                  Positioned(
-                    height: 400,
-                    width: width+20,
-                    child: FadeInUp(duration: Duration(milliseconds: 1000), child: Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/background-2.png'),
-                          fit: BoxFit.fill
-                        )
-                      ),
-                    )),
-                  )
-                ],
-              ),
-            ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 40),
               child: Column(

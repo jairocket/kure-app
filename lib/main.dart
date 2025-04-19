@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:mobile/login.dart';
 import 'package:mobile/patient_form.dart';
 
+
 void main() {
   runApp(const MainApp());
 }
@@ -17,7 +18,7 @@ class MainApp extends StatelessWidget {
       create: (context) => MyAppState(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: "Meu App",
+        title: "K App",
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
@@ -28,9 +29,7 @@ class MainApp extends StatelessWidget {
   }
 }
 
-class MyAppState extends ChangeNotifier {
-
-}
+class MyAppState extends ChangeNotifier {}
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -45,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var selectedPage = SelectedPage.home;
   var loginPage = LoginPage();
   var patientFormPage = PatientForm();
-  var consultaFormPage= AgendamentoConsultaPage();
+  var appointmentFormPage = AgendamentoConsultaPage();
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case SelectedPage.appointments:
         page = Placeholder();
       case SelectedPage.newAppointment:
-        page = consultaFormPage;
+        page = appointmentFormPage;
       case SelectedPage.newPatient:
         page = patientFormPage;
     }
@@ -83,41 +82,43 @@ class _MyHomePageState extends State<MyHomePage> {
                 ListTile(
                   title: Text("Home"),
                   leading: Icon(Icons.home),
-                  onTap: () => setState(() {
-                    selectedPage = SelectedPage.home;
-                    Scaffold.of(context).closeDrawer();
-                  }),
+                  onTap:
+                      () => setState(() {
+                        selectedPage = SelectedPage.home;
+                        Scaffold.of(context).closeDrawer();
+                      }),
                 ),
                 ListTile(
                   title: Text("Cadastrar Paciente"),
                   leading: Icon(Icons.person_add),
-                  onTap: () => setState(() {
-                    selectedPage = SelectedPage.newPatient;
-                    Scaffold.of(context).closeDrawer();
-                  }),
+                  onTap:
+                      () => setState(() {
+                        selectedPage = SelectedPage.newPatient;
+                        Scaffold.of(context).closeDrawer();
+                      }),
                 ),
                 ListTile(
                   title: Text("Nova Consulta"),
                   leading: Icon(Icons.assignment_add),
-                  onTap: () => setState(() {
-                    selectedPage = SelectedPage.newAppointment;
-                    Scaffold.of(context).closeDrawer();
-                  }),
+                  onTap:
+                      () => setState(() {
+                        selectedPage = SelectedPage.newAppointment;
+                        Scaffold.of(context).closeDrawer();
+                      }),
                 ),
                 ListTile(
                   title: Text("Consultas"),
                   leading: Icon(Icons.access_time),
-                  onTap: () => setState(() {
-                    selectedPage = SelectedPage.appointments;
-                    Scaffold.of(context).closeDrawer();
-                  }),
-                )
-          
-             
+                  onTap:
+                      () => setState(() {
+                        selectedPage = SelectedPage.appointments;
+                        Scaffold.of(context).closeDrawer();
+                      }),
+                ),
               ],
             ),
           );
-        }
+        },
       ),
 
       body: Column(children: [Expanded(child: page)]),
