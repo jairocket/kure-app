@@ -3,18 +3,9 @@ import 'package:mobile/consulta.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/login.dart';
 import 'package:mobile/patient_form.dart';
-import 'package:flutter/foundation.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:universal_io/io.dart';
-
 
 
 void main() {
-  if(!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-  }
   runApp(const MainApp());
 }
 
@@ -53,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var selectedPage = SelectedPage.home;
   var loginPage = LoginPage();
   var patientFormPage = PatientForm();
-  var consultaFormPage= AgendamentoConsultaPage();
+  var appointmentFormPage = AgendamentoConsultaPage();
 
   @override
   Widget build(BuildContext context) {
@@ -65,12 +56,10 @@ class _MyHomePageState extends State<MyHomePage> {
       case SelectedPage.appointments:
         page = Placeholder();
       case SelectedPage.newAppointment:
-        page = consultaFormPage;
+        page = appointmentFormPage;
       case SelectedPage.newPatient:
         page = patientFormPage;
     }
-
-  
 
     return Scaffold(
       appBar: AppBar(

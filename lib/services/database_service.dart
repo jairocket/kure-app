@@ -24,21 +24,21 @@ class DatabaseService {
 
   Future<Database> getDatabase() async {
     final databaseDirectoryPath = await getDatabasesPath();
-    final databasePath = join(databaseDirectoryPath, "k_database.db");
+    final databasePath = join(databaseDirectoryPath, 'k_database.db');
 
     final database = openDatabase(
       databasePath,
       version: 1,
       onCreate: (db, version) {
         db.execute('''
-            CREATE TABLE $_patientsTableName (
-              $_patientsIdColumnName INTEGER PRIMARY KEY, 
+            CREATE TABLE $_patientsTableName IF NOT EXISTS (
+              $_patientsIdColumnName INT PRIMARY KEY NOT NULL, 
               $_patientsNameColumnName TEXT NOT NULL, 
               $_patientsCPFColumnName TEXT UNIQUE NOT NULL, 
               $_patientsPhoneColumnName TEXT NOT NULL, 
               $_patientsBirthdayColumnName TEXT NOT NULL,
               $_patientsGenderColumnName TEXT NOT NULL
-            )',
+            )                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
           ''');
       },
     );
