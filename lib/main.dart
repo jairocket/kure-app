@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/consulta.dart';
-import 'package:mobile/services/database_service.dart';
+import 'package:mobile/login_form.java.dart';
 import 'package:provider/provider.dart';
-import 'package:mobile/login.dart';
 import 'package:mobile/patient_form.dart';
 
 
@@ -20,7 +19,7 @@ class MainApp extends StatelessWidget {
       create: (context) => MyAppState(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: "K App",
+        title: "Kure App",
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
@@ -44,7 +43,7 @@ enum SelectedPage { home, appointments, newAppointment, newPatient }
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedPage = SelectedPage.home;
-  var loginPage = LoginPage();
+  var loginPage = LoginForm();
   var patientFormPage = PatientForm();
   var appointmentFormPage = AgendamentoConsultaPage();
 
