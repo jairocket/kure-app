@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -37,11 +39,14 @@ class PatientForm extends StatefulWidget {
 String? name, cpf, phoneNumber, gender, birthday;
 bool _showGenderWarning = false;
 
-
 class _PatientFormState extends State<PatientForm> {
   final _formkey = GlobalKey<FormState>();
 
-  final DatabaseService _databaseService = DatabaseService.instance;
+  Future<void> savePatient(name, cpf, phone, birthday, gender) async {
+    final DatabaseService _databaseService = DatabaseService.instance;
+
+    await _databaseService.savePatient(name, cpf, phone, birthday, gender);
+  }
 
   Future<void> selectDate() async {
     DateTime? _picked = await showDatePicker(
@@ -158,7 +163,11 @@ class _PatientFormState extends State<PatientForm> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.only(top: 8.0, left: 10.0, bottom: 8.0),
+                                  padding: EdgeInsets.only(
+                                    top: 8.0,
+                                    left: 10.0,
+                                    bottom: 8.0,
+                                  ),
                                   child: Text(
                                     "Escolha uma opção",
                                     textAlign: TextAlign.left,
@@ -187,17 +196,48 @@ class _PatientFormState extends State<PatientForm> {
                               _showGenderWarning = false;
                             });
                           }
-                          if (
-                            _formkey.currentState!.validate() &&
-                              !_showGenderWarning
-                            ) {
+                          if (_formkey.currentState!.validate() &&
+                              !_showGenderWarning) {
                             _formkey.currentState!.save();
 
-                            _databaseService.savePatient(name!, cpf!, phoneNumber!, birthday!, gender!);
-                          
-                            print(
-                              "Patient { ${name}, ${phoneNumber}, ${cpf}, ${gender}, ${birthday} }",
-                            );
+                            savePatient(
+                                  name!,
+                                  cpf!,
+                                  phoneNumber!,
+                                  birthday!,
+                                  gender!,
+                                )
+                                .then(
+                                  (value) => ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Paciente cadastrado com sucesso!',
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .catchError((error) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text("Paciente já cadastrado."),
+                                    ),
+                                  );
+                                });
+                            _formkey.currentState!.reset();
+                            nameController.clear();
+                            cpfController.clear();
+                            phoneController.clear();
+                            birthdayController.clear();
+                            genderController.clear();
+                            setState(() {
+                              name = null;
+                              cpf = null;
+                              phoneNumber = null;
+                              gender = null;
+                              birthday = null;
+                            });
                           }
                         },
                         color: Color.fromRGBO(49, 39, 79, 1),
