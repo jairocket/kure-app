@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:mobile/components/custom_form_input_container.dart';
 import 'package:mobile/components/custom_form_title.dart';
 import 'package:mobile/components/custom_text_input_field.dart';
 import 'package:mobile/components/custom_time_picker.dart';
 import 'package:mobile/components/date_input.dart';
 
-
 class AgendamentoConsultaPage extends StatefulWidget {
   const AgendamentoConsultaPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _AgendamentoConsultaPageState(); 
+  State<StatefulWidget> createState() => _AgendamentoConsultaPageState();
 }
 
 final _patientNameController = TextEditingController();
@@ -66,7 +64,9 @@ class _AgendamentoConsultaPageState extends State<AgendamentoConsultaPage> {
       ),
       builder: (BuildContext context) {
         return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.95, // Ajuste a altura conforme necessário
+          height:
+              MediaQuery.of(context).size.height *
+              0.95, // Ajuste a altura conforme necessário
           child: Column(
             children: [
               Padding(
@@ -76,14 +76,17 @@ class _AgendamentoConsultaPageState extends State<AgendamentoConsultaPage> {
                   children: [
                     Text(
                       'Selecione um horário',
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     IconButton(
                       icon: Icon(Icons.close),
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -184,77 +187,95 @@ class _AgendamentoConsultaPageState extends State<AgendamentoConsultaPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 30),
-            CustomForm(
-              formKey: _formKey, 
-              customFormChildren: [
-                CustomFormTitle(title: "Agendar Consulta"),
-                SizedBox(height: 30),
-                CustomTextInputField(
-                  hintText: "Nome do paciente",
-                  controller: _patientNameController,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r"[a-zA-ZÀ-ÿ\s]")),
-                    ],
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return "Informe o nome do paciente";
-                    }
-                    return null;
-                  },
-                  onSaved:(value) => setState(() {
-                    if (value != null) {
-                      _nomePaciente = value;
-                    }
-                  },
-                  )
-                ),
-                SizedBox(height: 15),
-                CustomDateInput(
-                  controller: _dataConsultaController,
-                  labelText: 'Data da consulta',
-                  validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Selecione uma data";
-                  }
-                  return null;
-                },
-                onTap: _selecionarData,
-                onSaved: (_) {},
-                ),
-                 SizedBox(height: 15),
-                CustomTimeInput(
-                  controller: _horaConsultaController,
-                  labelText: 'Horário da consulta',
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Selecione o horário";
-                    }
-                    return null;
-                  },
-                  onTap: _selecionarHora,
-                  onSaved: (_) {},
-                ),
-                SizedBox(height: 30),
-                ElevatedButton(
-                  onPressed: _agendarConsulta,
-                  style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2D72F6),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                  horizontal: 60, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(40),
+            Container(
+              padding: EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    CustomFormTitle(title: "Agendar Consulta"),
+                    SizedBox(height: 30),
+                    CustomTextInputField(
+                      hintText: "Nome do paciente",
+                      controller: _patientNameController,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r"[a-zA-ZÀ-ÿ\s]"),
+                        ),
+                      ],
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return "Informe o nome do paciente";
+                        }
+                        return null;
+                      },
+                      onSaved:
+                          (value) => setState(() {
+                            if (value != null) {
+                              _nomePaciente = value;
+                            }
+                          }),
+                    ),
+                    SizedBox(height: 15),
+                    CustomDateInput(
+                      controller: _dataConsultaController,
+                      labelText: 'Data da consulta',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Selecione uma data";
+                        }
+                        return null;
+                      },
+                      onTap: _selecionarData,
+                      onSaved: (_) {},
+                    ),
+                    SizedBox(height: 15),
+                    CustomTimeInput(
+                      controller: _horaConsultaController,
+                      labelText: 'Horário da consulta',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Selecione o horário";
+                        }
+                        return null;
+                      },
+                      onTap: _selecionarHora,
+                      onSaved: (_) {},
+                    ),
+                    SizedBox(height: 30),
+                    ElevatedButton(
+                      onPressed: _agendarConsulta,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2D72F6),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 60,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                      ),
+                      child: Text(
+                        "Agendar Consulta",
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-                child: Text(
-                  "Agendar Consulta",
-                  style: TextStyle(fontSize: 16),
-                  ),
-                )
-              ]
-            )
-
+            ),
           ],
         ),
       ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/custom_form_input_container.dart';
 import 'package:mobile/components/custom_text_input_field.dart';
 import 'package:mobile/doctor_form.dart';
 import 'package:mobile/extensions/extensions.dart';
@@ -31,7 +30,7 @@ class _LoginFormState extends State<LoginForm> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -54,76 +53,99 @@ class _LoginFormState extends State<LoginForm> {
                   style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
                 ),
                 SizedBox(height: 40),
-                CustomForm(
-                  formKey: _formkey,
-                  customFormChildren: [
-                    CustomTextInputField(
-                      hintText: "E-mail",
-                      controller: _emailController,
-                      validator: (value) {
-                        if (!value!.isValidEmail) {
-                          return "Digite um email válido";
-                        }
-                        return null;
-                      },
-                      onSaved:
-                          (value) => {
-                            if (value != null) {email = value},
+                Container(
+                  padding: EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Form(
+                    key: _formkey,
+                    child: Column(
+                      children: [
+                        CustomTextInputField(
+                          hintText: "E-mail",
+                          controller: _emailController,
+                          validator: (value) {
+                            if (!value!.isValidEmail) {
+                              return "Digite um email válido";
+                            }
+                            return null;
                           },
-                      inputFormatters: [],
-                    ),
-                    SizedBox(height: 16),
-                    CustomTextInputField(
-                      hintText: "Digite a senha",
-                      controller: _passwordController,
-                      validator: (value) {
-                        if (value!.length < 8) {
-                          return "Digite um email válido";
-                        }
-                        return null;
-                      },
-                      onSaved:
-                          (value) => {
-                            if (value != null) {password = value},
+                          onSaved:
+                              (value) => {
+                                if (value != null) {email = value},
+                              },
+                          inputFormatters: [],
+                        ),
+                        SizedBox(height: 16),
+                        CustomTextInputField(
+                          hintText: "Digite a senha",
+                          controller: _passwordController,
+                          validator: (value) {
+                            if (value!.length < 8) {
+                              return "Digite um email válido";
+                            }
+                            return null;
                           },
-                      inputFormatters: [],
-                      obscureText: _obscurePassword,
-                    ),
-                    SizedBox(height: 30),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2D72F6),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                          onSaved:
+                              (value) => {
+                                if (value != null) {password = value},
+                              },
+                          inputFormatters: [],
+                          obscureText: _obscurePassword,
+                        ),
+                        SizedBox(height: 30),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF2D72F6),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            child: const Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                        child: const Text(
-                          'Login',
-                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        SizedBox(height: 20),
+                        TextButton.icon(
+                          onPressed: () {
+                            this.dispose();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const DoctorForm(),
+                              ),
+                            );
+                          },
+                          icon: Icon(Icons.add, color: Colors.black87),
+                          label: Text(
+                            'Criar Nova conta',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                    SizedBox(height: 20),
-                    TextButton.icon(
-                      onPressed: () {
-                        this.dispose();
-                        Navigator.push(
-                          context, 
-                          MaterialPageRoute(builder: (context) => const DoctorForm())
-                        );
-                      },
-                      icon: Icon(Icons.add, color: Colors.black87), 
-                      label: Text(
-                        'Criar Nova conta',
-                        style:TextStyle(fontSize: 14, color: Colors.black87),
-                      ),
-                    )
-
-                  ],
+                  ),
                 ),
               ],
             ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'components/custom_form_input_container.dart';
 import 'components/custom_form_title.dart';
 import 'components/custom_text_input_field.dart';
 
@@ -50,9 +49,6 @@ class _DoctorFormState extends State<DoctorForm> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        CustomForm(
-                          formKey: _formKey,
-                          customFormChildren: [
                             CustomFormTitle(title: "Crie sua conta"),
                             SizedBox(height: 30),
                             CustomTextInputField(
@@ -132,9 +128,7 @@ class _DoctorFormState extends State<DoctorForm> {
                               },
                               onSaved: (_) {},
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 30),
+                             SizedBox(height: 30),
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
@@ -165,15 +159,16 @@ class _DoctorFormState extends State<DoctorForm> {
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+                          ],
+                        ),
+                       
+                  )
+                )
+              )
+            )
+          )
         ],
-      ),
-    );
+      )
+    );   
   }
 }
