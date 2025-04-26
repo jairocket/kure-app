@@ -10,13 +10,17 @@ class CustomFormTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: TextStyle(
-        color: Color.fromRGBO(49, 39, 79, 1),
-        fontWeight: FontWeight.bold, 
-        fontSize: 30
-      )
+    return Center(
+      child: Text(
+        title.toUpperCase(),
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold, 
+          fontSize: 26,
+          letterSpacing: 1.2
+        )
+      ),
     );
   }
 }

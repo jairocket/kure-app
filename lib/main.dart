@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/consulta.dart';
+import 'package:mobile/doctor_form.dart';
 import 'package:mobile/login_form.java.dart';
+import 'package:mobile/report_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/patient_form.dart';
 
@@ -15,10 +17,18 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        routes: {
+          '/login': (context) => LoginForm(),
+          '/newAppointment': (context) => AgendamentoConsultaPage(),
+          '/newDoctor': (context) => DoctorForm(),
+          '/newPatient': (context) => PatientForm(),
+          '/report/screen': (context) => ReportScreen()
+        },
         title: "Kure App",
         theme: ThemeData(
           useMaterial3: true,
@@ -30,7 +40,13 @@ class MainApp extends StatelessWidget {
   }
 }
 
-class MyAppState extends ChangeNotifier {}
+class MyAppState extends ChangeNotifier {
+  var selectedPage = SelectedPage.home;
+  void setSelectedPage(SelectedPage newPage){
+    selectedPage = newPage;
+    notifyListeners();
+  }
+}
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -39,18 +55,34 @@ class MyHomePage extends StatefulWidget {
   State<StatefulWidget> createState() => _MyHomePageState();
 }
 
-enum SelectedPage { home, appointments, newAppointment, newPatient }
+enum SelectedPage { 
+  home, 
+  appointments, 
+  newAppointment, 
+  newPatient,
+  doctorForm,
+  reportScreen 
+}
 
 class _MyHomePageState extends State<MyHomePage> {
+  
+  
   var selectedPage = SelectedPage.home;
   var loginPage = LoginForm();
   var patientFormPage = PatientForm();
   var appointmentFormPage = AgendamentoConsultaPage();
+  var doctorForm = DoctorForm();
+  var reportScreen = ReportScreen();
 
+  setSelectedPage(SelectedPage newPage) {
+    selectedPage = newPage;
+  } 
+  
   @override
   Widget build(BuildContext context) {
+    
     Widget page;
-
+  
     switch (selectedPage) {
       case SelectedPage.home:
         page = loginPage;
@@ -60,6 +92,10 @@ class _MyHomePageState extends State<MyHomePage> {
         page = appointmentFormPage;
       case SelectedPage.newPatient:
         page = patientFormPage;
+      case SelectedPage.doctorForm:
+        page = doctorForm;
+      case SelectedPage.reportScreen:
+        page = reportScreen;
     }
 
     return Scaffold(
@@ -116,6 +152,24 @@ class _MyHomePageState extends State<MyHomePage> {
                         Scaffold.of(context).closeDrawer();
                       }),
                 ),
+                ListTile(
+                  title: Text("Cadastro"),
+                  leading: Icon(Icons.dynamic_form),
+                  onTap:
+                    () => setState(() {
+                      selectedPage = SelectedPage.doctorForm;
+                      Scaffold.of(context).closeDrawer();
+                    }),
+                ),
+                ListTile(
+                  title: Text("Relatório"),
+                  leading: Icon(Icons.report),
+                  onTap:
+                    () => setState(() {
+                      selectedPage = SelectedPage.reportScreen;
+                      Scaffold.of(context).closeDrawer();
+                    }),
+                )
               ],
             ),
           );

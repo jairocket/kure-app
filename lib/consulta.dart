@@ -1,17 +1,10 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:mobile/components/custom_form_input_container.dart';
 import 'package:mobile/components/custom_form_title.dart';
 import 'package:mobile/components/custom_text_input_field.dart';
 import 'package:mobile/components/custom_time_picker.dart';
 import 'package:mobile/components/date_input.dart';
-
-
-final _nomePacienteController = TextEditingController();
-final _dataConsultaController = TextEditingController();
-final _horaConsultaController = TextEditingController();
 
 class AgendamentoConsultaPage extends StatefulWidget {
   const AgendamentoConsultaPage({super.key});
@@ -20,6 +13,9 @@ class AgendamentoConsultaPage extends StatefulWidget {
   State<StatefulWidget> createState() => _AgendamentoConsultaPageState();
 }
 
+final _patientNameController = TextEditingController();
+final _dataConsultaController = TextEditingController();
+final _horaConsultaController = TextEditingController();
 // Variáveis que armazenam a data e hora escolhidas
 DateTime? _dataConsulta;
 TimeOfDay? _horaConsulta;
@@ -27,7 +23,7 @@ String? _nomePaciente;
 
 class _AgendamentoConsultaPageState extends State<AgendamentoConsultaPage> {
   // Chave do formulário usada para validação
-  final _formKey = GlobalKey<FormState>();
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   // Função que abre o seletor de data
   Future<void> _selecionarData() async {
@@ -61,18 +57,40 @@ class _AgendamentoConsultaPageState extends State<AgendamentoConsultaPage> {
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      ),
       builder: (BuildContext context) {
         return SizedBox(
-          height: 350, // Ajuste a altura conforme necessário
+          height:
+              MediaQuery.of(context).size.height *
+              0.95, // Ajuste a altura conforme necessário
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'Selecione um horário',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Selecione um horário',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
                 ),
               ),
+              Divider(),
               Expanded(
                 child: GridView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -134,14 +152,7 @@ class _AgendamentoConsultaPageState extends State<AgendamentoConsultaPage> {
       ).showSnackBar(SnackBar(content: Text('Consulta agendada com sucesso!')));
 
       // Limpa os campos após o agendamento
-      _formKey.currentState!.reset();
-      _nomePacienteController.clear();
-      setState(() {
-        _dataConsulta = null;
-        _horaConsulta = null;
-        _dataConsultaController.clear(); // Aqui limpa o campo visível
-        _horaConsultaController.clear(); // Aqui também
-      });
+      _cleanInputData();
     } else {
       // Se algum campo estiver faltando, mostra alerta
       ScaffoldMessenger.of(
@@ -150,9 +161,9 @@ class _AgendamentoConsultaPageState extends State<AgendamentoConsultaPage> {
     }
   }
 
-  void _cancelarConsulta() {
+  void _cleanInputData() {
     _formKey.currentState?.reset();
-    _nomePacienteController.clear();
+    _patientNameController.clear();
     _dataConsultaController.clear();
     _horaConsultaController.clear();
 
@@ -176,137 +187,89 @@ class _AgendamentoConsultaPageState extends State<AgendamentoConsultaPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 30),
-            Form(
-              key: _formKey,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40),
+            Container(
+              padding: EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(30),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: Form(
+                key: _formKey,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    FadeInUp(
-                      duration: Duration(microseconds: 1500),
-                      child: CustomFormTitle(title: "Nova consulta"),
-                    ),
-
+                    CustomFormTitle(title: "Agendar Consulta"),
                     SizedBox(height: 30),
-                    FadeInUp(
-                      duration: Duration(milliseconds: 1700),
-                      child: CustomFormInputContainer(
-                        inputFields: [
-                          CustomTextInputField(
-                            hintText: "Nome do paciente",
-                            controller: _nomePacienteController,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Informe o nome do paciente';
-                              }
-
-                              if (value.trim().length < 3) {
-                                return 'O nome deve ter pelo menos 3 letras';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              value = _nomePaciente;
-                            },
-                            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-ZÀ-ÿ\s]')),
-                            ],
-                          ),
-
-                          CustomDateInput(
-                            controller: _dataConsultaController,
-                            labelText: 'Data da consulta',
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Selecione uma data";
-                              }
-                              return null;
-                            },
-                            onTap: _selecionarData,
-                            onSaved: (value) => setState(() {}),
-                          ),
-
-                          CustomTimeInput(
-                            controller: _horaConsultaController,
-                            labelText: 'Horário da consulta',
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Selecione o horário";
-                              }
-                              return null;
-                            },
-                            onTap: _selecionarHora,
-                            onSaved: (value) {},
-                          ),
-                        ],
-                      ),
+                    CustomTextInputField(
+                      hintText: "Nome do paciente",
+                      controller: _patientNameController,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                          RegExp(r"[a-zA-ZÀ-ÿ\s]"),
+                        ),
+                      ],
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return "Informe o nome do paciente";
+                        }
+                        return null;
+                      },
+                      onSaved:
+                          (value) => setState(() {
+                            if (value != null) {
+                              _nomePaciente = value;
+                            }
+                          }),
                     ),
-
-                    FadeInUp(
-                      duration: Duration(milliseconds: 1900),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 30.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: _agendarConsulta,
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                backgroundColor: Color.fromRGBO(49, 39, 79, 1),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                elevation: 2,
-                              ),
-                              child: const Text(
-                                'Agendar Consulta',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
+                    SizedBox(height: 15),
+                    CustomDateInput(
+                      controller: _dataConsultaController,
+                      labelText: 'Data da consulta',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Selecione uma data";
+                        }
+                        return null;
+                      },
+                      onTap: _selecionarData,
+                      onSaved: (_) {},
+                    ),
+                    SizedBox(height: 15),
+                    CustomTimeInput(
+                      controller: _horaConsultaController,
+                      labelText: 'Horário da consulta',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Selecione o horário";
+                        }
+                        return null;
+                      },
+                      onTap: _selecionarHora,
+                      onSaved: (_) {},
+                    ),
+                    SizedBox(height: 30),
+                    ElevatedButton(
+                      onPressed: _agendarConsulta,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF2D72F6),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 60,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
                         ),
                       ),
-                    ),
-
-                    FadeInUp(
-                      duration: Duration(milliseconds: 2000),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 10.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton(
-                              onPressed: _cancelarConsulta,
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                side: BorderSide(
-                                  color: Color.fromRGBO(49, 39, 79, 1),
-                                  width: 2,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                              ),
-                              child: Text(
-                                'Cancelar',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Color.fromRGBO(49, 39, 79, 1),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                      child: Text(
+                        "Agendar Consulta",
+                        style: TextStyle(fontSize: 16),
                       ),
                     ),
                   ],
