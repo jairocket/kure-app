@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/consulta.dart';
-import 'package:mobile/login_form.java.dart';
 import 'package:provider/provider.dart';
-import 'package:mobile/patient_form.dart';
-
+import 'login.dart';
+import 'patient_form.dart';
+import 'scheduled_appointments.dart';
+import 'doctor_form.dart';
+import 'report_screen.dart';
 
 void main() {
   runApp(const MainApp());
-
 }
 
 class MainApp extends StatelessWidget {
@@ -19,110 +19,108 @@ class MainApp extends StatelessWidget {
       create: (context) => MyAppState(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: "Kure App",
+        title: "Meu App",
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
         ),
-        home: MyHomePage(),
+        // 👇 Inicializa direto na tela de Login
+        home: const LoginPage(),
       ),
     );
   }
 }
 
-class MyAppState extends ChangeNotifier {}
+class MyAppState extends ChangeNotifier {
+  var isExpanded = false;
 
+  void navigationBarToggle() {
+    isExpanded = !isExpanded;
+    notifyListeners();
+  }
+}
+
+// Esta tela aqui (MyHomePage) agora é usada somente **depois** do login
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-enum SelectedPage { home, appointments, newAppointment, newPatient }
+enum SelectedPage {
+  cadastrarPaciente,
+  cadastrarMedico,
+  marcarConsulta,
+  relatorio,
+}
 
 class _MyHomePageState extends State<MyHomePage> {
-  var selectedPage = SelectedPage.home;
-  var loginPage = LoginForm();
-  var patientFormPage = PatientForm();
-  var appointmentFormPage = AgendamentoConsultaPage();
+  var selectedPage = SelectedPage.cadastrarPaciente;
 
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
     Widget page;
 
     switch (selectedPage) {
-      case SelectedPage.home:
-        page = loginPage;
-      case SelectedPage.appointments:
-        page = Placeholder();
-      case SelectedPage.newAppointment:
-        page = appointmentFormPage;
-      case SelectedPage.newPatient:
-        page = patientFormPage;
+      case SelectedPage.cadastrarPaciente:
+        page = const PatientForm();
+        break;
+      case SelectedPage.cadastrarMedico:
+        page = const DoctorForm();
+        break;
+      case SelectedPage.marcarConsulta:
+        page = const ScheduleAppointmentPage();
+        break;
+      case SelectedPage.relatorio:
+        page = const ReportScreen();
+        break;
     }
 
     return Scaffold(
       appBar: AppBar(
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              onPressed: Scaffold.of(context).openDrawer,
-              icon: Icon(Icons.menu),
-              padding: EdgeInsets.symmetric(horizontal: 30),
-            );
-          },
+        title: const Text('Painel'),
+        leading: IconButton(
+          onPressed: appState.navigationBarToggle,
+          icon: const Icon(Icons.menu),
         ),
       ),
-      drawer: Builder(
-        builder: (context) {
-          return Drawer(
-            child: ListView(
-              children: [
-                const DrawerHeader(child: Text("Menu")),
-                ListTile(
-                  title: Text("Home"),
-                  leading: Icon(Icons.home),
-                  onTap:
-                      () => setState(() {
-                        selectedPage = SelectedPage.home;
-                        Scaffold.of(context).closeDrawer();
-                      }),
+      body: Row(
+        children: [
+          SafeArea(
+            child: NavigationRail(
+              selectedIndex: selectedPage.index,
+              onDestinationSelected: (index) {
+                setState(() {
+                  selectedPage = SelectedPage.values[index];
+                });
+              },
+              extended: appState.isExpanded,
+              destinations: const [
+                NavigationRailDestination(
+                  icon: Icon(Icons.person_add),
+                  label: Text("Cadastrar Paciente"),
                 ),
-                ListTile(
-                  title: Text("Cadastrar Paciente"),
-                  leading: Icon(Icons.person_add),
-                  onTap:
-                      () => setState(() {
-                        selectedPage = SelectedPage.newPatient;
-                        Scaffold.of(context).closeDrawer();
-                      }),
+                NavigationRailDestination(
+                  icon: Icon(Icons.medical_services),
+                  label: Text("Cadastrar Médico"),
                 ),
-                ListTile(
-                  title: Text("Nova Consulta"),
-                  leading: Icon(Icons.assignment_add),
-                  onTap:
-                      () => setState(() {
-                        selectedPage = SelectedPage.newAppointment;
-                        Scaffold.of(context).closeDrawer();
-                      }),
+                NavigationRailDestination(
+                  icon: Icon(Icons.event_available),
+                  label: Text("Marcar Consulta"),
                 ),
-                ListTile(
-                  title: Text("Consultas"),
-                  leading: Icon(Icons.access_time),
-                  onTap:
-                      () => setState(() {
-                        selectedPage = SelectedPage.appointments;
-                        Scaffold.of(context).closeDrawer();
-                      }),
+                NavigationRailDestination(
+                  icon: Icon(Icons.bar_chart),
+                  label: Text("Relatório"),
                 ),
               ],
             ),
-          );
-        },
+          ),
+          const VerticalDivider(thickness: 1, width: 1),
+          Expanded(child: page),
+        ],
       ),
-
-      body: Column(children: [Expanded(child: page)]),
     );
   }
 }

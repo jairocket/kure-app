@@ -21,19 +21,27 @@ class CustomTimeInput extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AbsorbPointer(
-        child: TextFormField(
-          controller: controller,
-          decoration: InputDecoration(
-            labelText: labelText,
-            suffixIcon: Icon(Icons.access_time),
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-            enabledBorder: InputBorder.none,
-            focusedBorder: InputBorder.none,
-            errorBorder: InputBorder.none,
-            focusedErrorBorder: InputBorder.none,
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFEEEEEE),
+            borderRadius: BorderRadius.circular(12),
           ),
-          validator: validator,
-          onSaved: onSaved,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: TextFormField(
+            controller: controller,
+            decoration: InputDecoration(
+              labelText: labelText,
+              suffixIcon: const Icon(
+                Icons.access_time,
+                color: Colors.grey,
+              ),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            validator: validator,
+            onSaved: onSaved,
+            style: const TextStyle(fontSize: 15),
+          ),
         ),
       ),
     );

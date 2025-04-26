@@ -6,43 +6,56 @@ class CustomTextInputField extends StatelessWidget {
     super.key,
     required this.hintText,
     required this.controller,
-    required this.validator,
     this.obscureText = false,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.onSuffixTap,
+    required this.validator,
     required this.onSaved,
-    required this.inputFormatters
+    this.inputFormatters = const [],
+    this.keyboardType = TextInputType.text,
+    this.readOnly = false,
   });
 
   final String hintText;
   final TextEditingController controller;
   final bool obscureText;
+  final IconData? prefixIcon;
+  final IconData? suffixIcon;
+  final VoidCallback? onSuffixTap;
   final String? Function(String?) validator;
-  final Function(String?) onSaved;
+  final void Function(String?) onSaved;
   final List<TextInputFormatter> inputFormatters;
+  final TextInputType keyboardType;
+  final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Color.fromRGBO(196, 135, 198, .3)
-          )
-        )
+        color: const Color(0xFFEEEEEE),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: TextFormField(    
-        obscureText: obscureText, 
+      child: TextFormField(
+        controller: controller,
+        obscureText: obscureText,
+        validator: validator,
+        onSaved: onSaved,
+        readOnly: readOnly,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: hintText,
-          hintStyle: TextStyle(
-            color: Colors.grey.shade700
-          )
+          prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+          suffixIcon: suffixIcon != null
+              ? IconButton(
+                  icon: Icon(suffixIcon),
+                  onPressed: onSuffixTap,
+                )
+              : null,
         ),
-        validator: validator,
-        onSaved: onSaved,
-        controller: controller,
-        inputFormatters: [...inputFormatters],
       ),
     );
   }

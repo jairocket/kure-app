@@ -46,7 +46,7 @@ class DatabaseService {
     return database;
   }
 
-  Future<void> savePatient (
+  void savePatient (
     String name, 
     String cpf,
     String phone,
@@ -54,25 +54,18 @@ class DatabaseService {
     String gender
   ) async {
     final db = await database;
-
-    try {
-      await db.insert(
-          _patientsTableName,
-          {
-            _patientsNameColumnName: name,
-            _patientsCPFColumnName: cpf,
-            _patientsPhoneColumnName: phone,
-            _patientsBirthdayColumnName: birthday,
-            _patientsGenderColumnName: gender
-          },
-          conflictAlgorithm: ConflictAlgorithm.abort
-      );
-    } catch(e) {
-      rethrow;
-    }
-
-    }
+    await db.insert(
+      _patientsTableName, 
+      {
+        _patientsNameColumnName: name,
+        _patientsCPFColumnName: cpf,
+        _patientsPhoneColumnName: phone,
+        _patientsBirthdayColumnName: birthday,
+        _patientsGenderColumnName: gender
+      },
+      conflictAlgorithm: ConflictAlgorithm.abort
+    );
   }
 
 
-
+}
