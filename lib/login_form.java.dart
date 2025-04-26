@@ -110,7 +110,8 @@ class _LoginFormState extends State<LoginForm> {
                     SizedBox(height: 20),
                     TextButton.icon(
                       onPressed: () {
-                        Navigator.pushReplacement(
+                        this.dispose();
+                        Navigator.push(
                           context, 
                           MaterialPageRoute(builder: (context) => const DoctorForm())
                         );

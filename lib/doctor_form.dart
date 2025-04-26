@@ -50,7 +50,6 @@ class _DoctorFormState extends State<DoctorForm> {
                     key: _formKey,
                     child: Column(
                       children: [
-
                         CustomForm(
                           formKey: _formKey,
                           customFormChildren: [
@@ -71,6 +70,7 @@ class _DoctorFormState extends State<DoctorForm> {
                               },
                               onSaved: (_) {},
                             ),
+                            SizedBox(height: 15),
                             CustomTextInputField(
                               hintText: "Sobrenome:",
                               controller: _sobrenomeController,
@@ -86,6 +86,7 @@ class _DoctorFormState extends State<DoctorForm> {
                               },
                               onSaved: (_) {},
                             ),
+                            SizedBox(height: 15),
                             CustomTextInputField(
                               hintText: "CRM:",
                               controller: _crmController,
@@ -101,6 +102,7 @@ class _DoctorFormState extends State<DoctorForm> {
                               },
                               onSaved: (_) {},
                             ),
+                            SizedBox(height: 15),
                             CustomTextInputField(
                               hintText: "Telefone:",
                               controller: _telefoneController,
@@ -113,6 +115,7 @@ class _DoctorFormState extends State<DoctorForm> {
                               },
                               onSaved: (_) {},
                             ),
+                            SizedBox(height: 15),
                             CustomTextInputField(
                               hintText: "Email:",
                               controller: _emailController,

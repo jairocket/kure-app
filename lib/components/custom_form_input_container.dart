@@ -27,7 +27,7 @@ class CustomForm extends StatelessWidget {
         ]
       ),
       child: Form(
-        key: formKey,
+        key: GlobalKey<FormState>(),
         child: Column(
           children: [
             ...customFormChildren,
