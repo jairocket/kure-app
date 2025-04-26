@@ -1,12 +1,8 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/components/custom_form_input_container.dart';
-import 'package:mobile/components/custom_form_title.dart';
 import 'package:mobile/components/custom_text_input_field.dart';
+import 'package:mobile/doctor_form.dart';
 import 'package:mobile/extensions/extensions.dart';
-
-final TextEditingController emailController = TextEditingController();
-final TextEditingController passwordController = TextEditingController();
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -16,122 +12,121 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final _formkey = GlobalKey<FormState>();
+  GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   String? email, password;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _obscurePassword = true;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 30),
-            Form(
-              key: _formkey,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 40),
-                child: Column(
-                  children: [
-                    FadeInUp(
-                      child: CustomFormTitle(title: "Login"),
-                      duration: Duration(microseconds: 1500),
+      backgroundColor: const Color(0xFFF6F6F6),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 40),
+                CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Color(0xFF2D72F6),
+                  child: Text(
+                    'K',
+                    style: TextStyle(
+                      fontSize: 36,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 15),
+                Text(
+                  "Kure App",
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
+                ),
+                SizedBox(height: 40),
+                CustomForm(
+                  formKey: _formkey,
+                  customFormChildren: [
+                    CustomTextInputField(
+                      hintText: "E-mail",
+                      controller: _emailController,
+                      validator: (value) {
+                        if (!value!.isValidEmail) {
+                          return "Digite um email válido";
+                        }
+                        return null;
+                      },
+                      onSaved:
+                          (value) => {
+                            if (value != null) {email = value},
+                          },
+                      inputFormatters: [],
+                    ),
+                    SizedBox(height: 16),
+                    CustomTextInputField(
+                      hintText: "Digite a senha",
+                      controller: _passwordController,
+                      validator: (value) {
+                        if (value!.length < 8) {
+                          return "Digite um email válido";
+                        }
+                        return null;
+                      },
+                      onSaved:
+                          (value) => {
+                            if (value != null) {password = value},
+                          },
+                      inputFormatters: [],
+                      obscureText: _obscurePassword,
                     ),
                     SizedBox(height: 30),
-                    FadeInUp(
-                      child: CustomFormInputContainer(
-                        inputFields: [
-                          CustomTextInputField(
-                            hintText: "E-mail",
-                            controller: emailController,
-                            validator: (value) {
-                              if (!value!.isValidEmail) {
-                                return "Digite um email válido";
-                              }
-                              return null;
-                            },
-                            onSaved:
-                                (value) => {
-                                  if (value != null) {email = value},
-                                },
-                            inputFormatters: [],
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2D72F6),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
                           ),
-                          CustomTextInputField(
-                            hintText: "Digite a senha",
-                            controller: passwordController,
-                            validator: (value) {
-                              if (value!.length < 8) {
-                                return "Digite um email válido";
-                              }
-                              return null;
-                            },
-                            onSaved:
-                                (value) => {
-                                  if (value != null) {password = value},
-                                },
-                            inputFormatters: [],
-                            obscureText: true,
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 30),
-                    FadeInUp(
-                      duration: Duration(milliseconds: 1700), 
-                      child: Center(
-                        child: TextButton(
-                          onPressed: () {}, 
-                          child: Text(
-                            "Esqueceu a senha?", 
-                            style: TextStyle(
-                              color: Color.fromRGBO(196, 135, 198, 1)
-                              ),
-                            )
-                          )
-                        )
-                      ),
-                    FadeInUp(
-                      duration: Duration(milliseconds: 1900),
-                      child: MaterialButton(
-                        onPressed: () {
-                          if (_formkey.currentState!.validate()) {
-                            _formkey.currentState!.save();
-                          }
-                          print("Login { ${email}, ${password} }");
-                        },
-                        color: Color.fromRGBO(49, 39, 79, 1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
                         ),
-                        height: 50,
-                        child: Center(
-                          child: Text(
-                            "Salvar",
-                            style: TextStyle(color: Colors.white),
-                          ),
+                        child: const Text(
+                          'Login',
+                          style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
                     ),
-                    SizedBox(height: 30),
-                    FadeInUp(
-                      duration: Duration(milliseconds: 2000),
-                      child: Center(
-                        child: TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            "Criar Conta",
-                            style: TextStyle(
-                              color: Color.fromRGBO(49, 39, 79, .6),
-                            ),
-                          ),
-                        ),
+                    SizedBox(height: 20),
+                    TextButton.icon(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context, 
+                          MaterialPageRoute(builder: (context) => const DoctorForm())
+                        );
+                      },
+                      icon: Icon(Icons.add, color: Colors.black87), 
+                      label: Text(
+                        'Criar Nova conta',
+                        style:TextStyle(fontSize: 14, color: Colors.black87),
                       ),
-                    ),
+                    )
+
                   ],
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

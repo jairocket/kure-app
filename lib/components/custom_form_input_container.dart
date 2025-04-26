@@ -1,34 +1,38 @@
 import 'package:flutter/material.dart';
 
-class CustomFormInputContainer extends StatelessWidget {
-  const CustomFormInputContainer({
+class CustomForm extends StatelessWidget {
+  const CustomForm({
+
     super.key,
-    required this.inputFields
+    required this.formKey,
+    required this.customFormChildren
   });
 
-  final List<Widget> inputFields;
+  final List<Widget> customFormChildren;
+  final Key formKey; 
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.all(24),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(30),
         color: Colors.white,
-        border: Border.all(
-          color: Color.fromRGBO(196, 135, 198, 3),
-        ),
         boxShadow: [
           BoxShadow(
-            color: Color.fromRGBO(196, 135, 198, .3),
-            blurRadius: 20,
-            offset: Offset(0, 10)
+            color: Colors.black12,
+            blurRadius: 10,
+            offset: Offset(0, 5)
           )
         ]
       ),
-      child: Column(
-        children: [
-          ...inputFields,
-        ],
+      child: Form(
+        key: formKey,
+        child: Column(
+          children: [
+            ...customFormChildren,
+          ],
+        ),
       ),
     );
   }

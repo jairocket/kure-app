@@ -9,7 +9,12 @@ class CustomTextInputField extends StatelessWidget {
     required this.validator,
     this.obscureText = false,
     required this.onSaved,
-    required this.inputFormatters
+    required this.inputFormatters,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.onSuffixTap,
+    this.keyboardType = TextInputType.text,
+    this.readOnly = false,
   });
 
   final String hintText;
@@ -18,26 +23,32 @@ class CustomTextInputField extends StatelessWidget {
   final String? Function(String?) validator;
   final Function(String?) onSaved;
   final List<TextInputFormatter> inputFormatters;
+  final IconData? prefixIcon;
+  final IconData? suffixIcon;
+  final VoidCallback? onSuffixTap;
+  final TextInputType keyboardType;
+  final bool readOnly;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Color.fromRGBO(196, 135, 198, .3)
-          )
-        )
+        color: const Color(0xFFEEEEEE),
+        borderRadius: BorderRadius.circular(12),   
       ),
       child: TextFormField(    
         obscureText: obscureText, 
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: hintText,
-          hintStyle: TextStyle(
-            color: Colors.grey.shade700
-          )
+          prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+          suffixIcon: suffixIcon != null
+              ? IconButton(
+                  icon: Icon(suffixIcon),
+                  onPressed: onSuffixTap,
+                )
+              : null,
         ),
         validator: validator,
         onSaved: onSaved,

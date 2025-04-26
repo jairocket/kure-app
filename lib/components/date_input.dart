@@ -18,20 +18,23 @@ class CustomDateInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 10.0),
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Color.fromRGBO(196, 135, 198, .3)),
-        ),
+        color: Color(0xFFEEEEEE),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
-          contentPadding: EdgeInsets.only(left: 10),
           labelText: labelText,
-          enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
-          focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
+          labelStyle: TextStyle(
+            color: Colors.grey.shade700,
+            fontSize: 14,
+          ),
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.symmetric(vertical: 14),
         ),
+        style: TextStyle(fontSize: 15),
         onTap: onTap,
         readOnly: true,
         onSaved: onSaved,
