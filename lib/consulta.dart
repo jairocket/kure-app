@@ -138,15 +138,12 @@ class _AgendamentoConsultaPageState extends State<AgendamentoConsultaPage> {
     );
   }
 
-  // Função que valida e realiza o agendamento
   void _agendarConsulta() {
-    final isValid =
-        _formKey.currentState!.validate(); // Valida os campos do formulário
+    final isValid = _formKey.currentState!.validate();
     final dataSelecionada = _dataConsulta != null;
     final horaSelecionada = _horaConsulta != null;
 
     if (isValid && dataSelecionada && horaSelecionada) {
-      // Se tudo estiver preenchido corretamente, mostra mensagem de sucesso
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Consulta agendada com sucesso!')));
@@ -177,7 +174,6 @@ class _AgendamentoConsultaPageState extends State<AgendamentoConsultaPage> {
     ).showSnackBar(SnackBar(content: Text('Campos do agendamento apagados.')));
   }
 
-  // Monta a interface visual da tela
   @override
   Widget build(BuildContext context) {
     return Scaffold(
