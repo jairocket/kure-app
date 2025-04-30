@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:mobile/extensions/extensions.dart';
 import 'components/custom_form_title.dart';
 import 'components/custom_text_input_field.dart';
 
@@ -14,13 +15,17 @@ class DoctorForm extends StatefulWidget {
 class _DoctorFormState extends State<DoctorForm> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final _nomeController = TextEditingController();
-  final _sobrenomeController = TextEditingController();
-  final _crmController = TextEditingController();
-  final _telefoneController = TextEditingController();
-  final _emailController = TextEditingController();
+  String? name, crm, phone, email, password, repeatedPassword;
 
-   final _phoneFormatter = MaskTextInputFormatter(
+  final _nameController = TextEditingController();
+  final _crmController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _repeatedPasswordController = TextEditingController();
+
+  bool _obscureText = true;
+  final _phoneFormatter = MaskTextInputFormatter(
     mask: '(##) #####-####',
     filter: {"#": RegExp(r'[0-9]')},
   );
@@ -53,34 +58,21 @@ class _DoctorFormState extends State<DoctorForm> {
                             SizedBox(height: 30),
                             CustomTextInputField(
                               hintText: "Nome:",
-                              controller: _nomeController,
+                              controller: _nameController,
                               inputFormatters: [
                                 FilteringTextInputFormatter.allow(
                                     RegExp(r"[a-zA-ZÀ-ÿ\s]")),
                               ],
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
-                                  return "Digite o nome do médico";
+                                  return "Digite o nome completo";
                                 }
                                 return null;
                               },
-                              onSaved: (_) {},
-                            ),
-                            SizedBox(height: 15),
-                            CustomTextInputField(
-                              hintText: "Sobrenome:",
-                              controller: _sobrenomeController,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.allow(
-                                    RegExp(r"[a-zA-ZÀ-ÿ\s]")),
-                              ],
-                              validator: (value) {
-                                if (value == null || value.trim().isEmpty) {
-                                  return "Digite o sobrenome";
-                                }
-                                return null;
-                              },
-                              onSaved: (_) {},
+                              onSaved: (value) => setState(() {
+                                name = value;
+                              }
+                              ),
                             ),
                             SizedBox(height: 15),
                             CustomTextInputField(
@@ -96,12 +88,15 @@ class _DoctorFormState extends State<DoctorForm> {
                                 }
                                 return null;
                               },
-                              onSaved: (_) {},
+                              onSaved: (value) => setState(() {
+                                crm = value;
+                              }
+                              ),
                             ),
                             SizedBox(height: 15),
                             CustomTextInputField(
                               hintText: "Telefone:",
-                              controller: _telefoneController,
+                              controller: _phoneController,
                               inputFormatters: [_phoneFormatter],
                               validator: (value) {
                                 if (value == null || value.trim().isEmpty) {
@@ -109,7 +104,10 @@ class _DoctorFormState extends State<DoctorForm> {
                                 }
                                 return null;
                               },
-                              onSaved: (_) {},
+                              onSaved: (value) => setState(() {
+                                phone = value;
+                              }
+                              ),
                             ),
                             SizedBox(height: 15),
                             CustomTextInputField(
@@ -126,13 +124,53 @@ class _DoctorFormState extends State<DoctorForm> {
                                 }
                                 return null;
                               },
-                              onSaved: (_) {},
+                              onSaved: (value) => setState(() {
+                                email = value;
+                              }
+                              ),
                             ),
+                             SizedBox(height: 15),
+                             CustomTextInputField(
+                                 hintText: "Digite uma nova senha",
+                                 controller: _passwordController,
+                                 validator: (value) {
+                                   if(!value!.isValidPassword){
+                                     return "Digite uma senha válida";
+                                   }
+                                   return null;
+                                 },
+                                 onSaved: (value) => setState(
+                                     () {password = value;}
+                                 ),
+                                 inputFormatters: [],
+                               obscureText: _obscureText,
+                             ),
+                        SizedBox(height: 15),
+                        CustomTextInputField(
+                          hintText: "Confirme a senha",
+                          controller: _repeatedPasswordController,
+                          validator: (value) {
+                            if(value! != _passwordController.text){
+                              return "Senha digitada não confere";
+                            }
+                            if(value!.trim().length == 0) {
+                              return "Confirme a senha";
+                            }
+                            return null;
+                          },
+                          onSaved: (value) => setState(() {
+                            repeatedPassword = value;
+                            }
+                          ),
+                          inputFormatters: [],
+                          obscureText: _obscureText,
+                        ),
                              SizedBox(height: 30),
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               _formKey.currentState!.save();
+                              print("Médico {nome: ${name}, crm: ${crm}, telefone: ${phone}, email: ${email}, senha: ${password}, senha_repetida: ${repeatedPassword}");
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content:
