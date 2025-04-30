@@ -16,16 +16,16 @@ class NewAppointmentsPage extends StatefulWidget {
 final _patientNameController = TextEditingController();
 final _appointmentDateController = TextEditingController();
 final _appointmentTimeController = TextEditingController();
-// Variáveis que armazenam a data e hora escolhidas
+
 DateTime? _appointmentDate;
 TimeOfDay? _appointmentTime;
 String? _patientName;
 
 class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
-  // Chave do formulário usada para validação
+
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Função que abre o seletor de data
+
   Future<void> _datePicker() async {
     DateTime? date = await showDatePicker(
       context: context,
@@ -40,7 +40,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
       setState(() {
         _appointmentDate = date;
 
-        // Atualiza o campo visível com o valor formatado
+
         _appointmentDateController.text =
             "${date.day.toString().padLeft(2, '0')}/"
             "${date.month.toString().padLeft(2, '0')}/"
@@ -51,7 +51,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
 
   void _timePicker() {
     final List<TimeOfDay> avaliableTimes = List.generate(
-      20, // 08:00 até 17:30 = 20 intervalos de 30min
+      20,
       (index) => TimeOfDay(hour: 8 + (index ~/ 2), minute: (index % 2) * 30),
     );
 
@@ -66,7 +66,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
         return SizedBox(
           height:
               MediaQuery.of(context).size.height *
-              0.95, // Ajuste a altura conforme necessário
+              0.95, 
           child: Column(
             children: [
               Padding(
@@ -130,7 +130,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
               ),
               SizedBox(
                 height: 20,
-              ), // Adicionando um espaçamento entre a lista e a borda inferior
+              ),
             ],
           ),
         );
@@ -148,10 +148,8 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
         context,
       ).showSnackBar(SnackBar(content: Text('Consulta agendada com sucesso!')));
 
-      // Limpa os campos após o agendamento
       _cleanInputData();
     } else {
-      // Se algum campo estiver faltando, mostra alerta
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Preencha todos os campos!')));
