@@ -6,7 +6,7 @@ import 'package:mobile/components/custom_form_title.dart';
 import 'package:mobile/components/custom_gender_options.dart';
 import 'package:mobile/components/date_input.dart';
 import 'package:mobile/extensions/extensions.dart';
-import 'package:mobile/services/database_service.dart';
+import 'package:mobile/services/patient_service.dart';
 import 'components/custom_text_input_field.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
@@ -40,9 +40,9 @@ class _PatientFormState extends State<PatientForm> {
   bool _showGenderWarning = false;
 
   Future<void> savePatient(name, cpf, phone, birthday, gender) async {
-    final DatabaseService _databaseService = DatabaseService.instance;
+    final PatientService patientService = PatientService.instance;
 
-    await _databaseService.savePatient(name, cpf, phone, birthday, gender);
+    await patientService.savePatient(name, cpf, phone, birthday, gender);
   }
 
   Future<void> selectDate() async {

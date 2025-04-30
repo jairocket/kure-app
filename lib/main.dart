@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/consulta.dart';
 import 'package:mobile/doctor_form.dart';
@@ -5,9 +6,15 @@ import 'package:mobile/login_form.java.dart';
 import 'package:mobile/report_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/patient_form.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:universal_io/io.dart';
 
 
 void main() {
+  if(!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+  }
   runApp(const MainApp());
 
 }

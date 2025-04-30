@@ -6,14 +6,6 @@ class DatabaseService {
   static Database? _db;
   static final DatabaseService instance = DatabaseService._constructor();
   
-  final String _patientsTableName = 'patients';
-  final String _patientsIdColumnName = 'id';
-  final String _patientsNameColumnName = 'name';
-  final String _patientsCPFColumnName = 'cpf';
-  final String _patientsPhoneColumnName = 'phone';
-  final String _patientsBirthdayColumnName = 'birthday';
-  final String _patientsGenderColumnName = 'gender';
-
   DatabaseService._constructor();
 
   Future<Database> get database async {
@@ -32,13 +24,13 @@ class DatabaseService {
       version: 1,
       onCreate: (db, version) async {
         await db.execute('''
-            CREATE TABLE IF NOT EXISTS $_patientsTableName (
-              $_patientsIdColumnName INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
-              $_patientsNameColumnName TEXT NOT NULL, 
-              $_patientsCPFColumnName TEXT UNIQUE NOT NULL, 
-              $_patientsPhoneColumnName TEXT NOT NULL, 
-              $_patientsBirthdayColumnName TEXT NOT NULL,
-              $_patientsGenderColumnName TEXT NOT NULL
+            CREATE TABLE IF NOT EXISTS 'patients' (
+              id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+              name TEXT NOT NULL, 
+              cpf TEXT UNIQUE NOT NULL, 
+              phone TEXT NOT NULL, 
+              birthday TEXT NOT NULL,
+              gender TEXT NOT NULL
             )                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
           ''');
       },
@@ -46,32 +38,6 @@ class DatabaseService {
     return database;
   }
 
-  Future<void> savePatient (
-    String name, 
-    String cpf,
-    String phone,
-    String birthday,
-    String gender
-  ) async {
-    final db = await database;
-
-    try {
-      await db.insert(
-          _patientsTableName,
-          {
-            _patientsNameColumnName: name,
-            _patientsCPFColumnName: cpf,
-            _patientsPhoneColumnName: phone,
-            _patientsBirthdayColumnName: birthday,
-            _patientsGenderColumnName: gender
-          },
-          conflictAlgorithm: ConflictAlgorithm.abort
-      );
-    } catch(e) {
-      rethrow;
-    }
-
-    }
   }
 
 
