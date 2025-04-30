@@ -140,10 +140,11 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
 
   void _makeAppointment() {
     final isValid = _formKey.currentState!.validate();
-    final dataSelecionada = _appointmentDate != null;
-    final horaSelecionada = _appointmentTime != null;
+    final inputName = _patientName != null;
+    final selectedDate = _appointmentDate != null;
+    final selectedTime = _appointmentTime != null;
 
-    if (isValid && dataSelecionada && horaSelecionada) {
+    if (isValid && selectedDate && selectedTime && inputName) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Consulta agendada com sucesso!')));
