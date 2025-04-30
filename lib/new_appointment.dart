@@ -166,10 +166,6 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
       _appointmentDate = null;
       _appointmentTime = null;
     });
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Campos do agendamento apagados.')));
   }
 
   @override
@@ -264,6 +260,31 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                       child: Text(
                         "Agendar Consulta",
                         style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+
+                                       Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                        onPressed: _cleanInputData,
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 70,
+                            vertical: 16,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                            side: BorderSide(
+                              color: const Color(0xFF2D72F6),
+                              width: 2,
+                            )
+                          ),
+                        ),
+                        child: Text(
+                          "Limpar campos",
+                          style: TextStyle(fontSize: 16, color: const Color(0xFF2D72F6),),
+                        ),
                       ),
                     ),
                   ],
