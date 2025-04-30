@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/consulta.dart';
+import 'package:mobile/new_appointment.dart';
 import 'package:mobile/doctor_form.dart';
 import 'package:mobile/login_form.java.dart';
 import 'package:mobile/report_screen.dart';
@@ -31,7 +31,7 @@ class MainApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         routes: {
           '/login': (context) => LoginForm(),
-          '/newAppointment': (context) => AgendamentoConsultaPage(),
+          '/newAppointment': (context) => NewAppointmentsPage(),
           '/newDoctor': (context) => DoctorForm(),
           '/newPatient': (context) => PatientForm(),
           '/report/screen': (context) => ReportScreen()
@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var selectedPage = SelectedPage.home;
   var loginPage = LoginForm();
   var patientFormPage = PatientForm();
-  var appointmentFormPage = AgendamentoConsultaPage();
+  var appointmentFormPage = NewAppointmentsPage();
   var doctorForm = DoctorForm();
   var reportScreen = ReportScreen();
 
