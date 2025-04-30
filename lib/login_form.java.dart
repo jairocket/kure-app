@@ -35,22 +35,26 @@ class _LoginFormState extends State<LoginForm> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 40),
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Color(0xFF2D72F6),
-                  child: Text(
-                    'K',
-                    style: TextStyle(
-                      fontSize: 36,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                Center(
+                  child: CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Color(0xFF2D72F6),
+                    child: Text(
+                      'K',
+                      style: TextStyle(
+                        fontSize: 36,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(height: 15),
-                Text(
-                  "Kure App",
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
+                Center(
+                  child: Text(
+                    "Kure App",
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
+                  ),
                 ),
                 SizedBox(height: 40),
                 Container(
