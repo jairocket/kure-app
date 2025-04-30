@@ -91,11 +91,11 @@ class _LoginFormState extends State<LoginForm> {
                         ),
                         SizedBox(height: 16),
                         CustomTextInputField(
-                          hintText: "Digite a senha",
+                          hintText: "Digite sua senha",
                           controller: _passwordController,
                           validator: (value) {
                             if (value!.length < 8) {
-                              return "Digite um email válido";
+                              return "Digite uma senha válida";
                             }
                             return null;
                           },

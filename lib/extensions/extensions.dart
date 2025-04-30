@@ -6,9 +6,9 @@ extension ExtString on String {
 
   bool get isValidPassword {
     final regExp = RegExp(
-      r"^(?=.[A-Z])(?=.[a-z])(?=*?[0-9])(?=*?[#?!@$^&*-]).{8,}$",
+      r"^(?=.*[A-Z])(?=.*[!#@$^%&])(?=.*[0-9])(?=.*[a-z]).{8,15}$",
     );
-    return regExp.hasMatch(this);
+    return regExp.hasMatch(this) && this.trim().length >= 8;
   }
 
   bool get isValidPatientName {
