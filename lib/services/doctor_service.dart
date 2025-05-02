@@ -44,7 +44,6 @@ class DoctorService {
   Future<Map<String, Object?>> logIn(String email, String password) async {
     final db = await _databaseService.database;
     try {
-      print("buscando no banco");
       List<Map<String, Object?>> loggedDoctorMap = await db.query(
         _doctorTableName,
         where: 'email = ? and password = ?',
@@ -58,8 +57,6 @@ class DoctorService {
       if(loggedDoctorMap.length == 0) {
         throw Exception("Credenciais inválidas");
       }
-
-      print("devolvendo do banco");
 
       return {
         "id": loggedDoctorMap.first[_doctorIdColumnName],

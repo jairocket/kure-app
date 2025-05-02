@@ -21,7 +21,7 @@ class DatabaseService {
 
     final database = await openDatabase(
       databasePath,
-      version: 2,
+      version: 3,
       onCreate: (db, version) async {
         await db.execute(
           '''
@@ -40,8 +40,8 @@ class DatabaseService {
               id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
               name TEXT NOT NULL,
               crm TEXT UNIQUE NOT NULL,
-              phone TEXT NOT NULL,
-              email TEXT NOT NULL,
+              phone TEXT UNIQUE NOT NULL,
+              email TEXT UNIQUE NOT NULL,
               password TEXT NOT NULL
             )        
           '''
