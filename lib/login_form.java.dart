@@ -20,13 +20,6 @@ class _LoginFormState extends State<LoginForm> {
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
 
@@ -138,7 +131,7 @@ class _LoginFormState extends State<LoginForm> {
                                       ).showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                            'Credenciais incorretas. Verifique e tente novamente',
+                                            error.toString(),
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
@@ -168,7 +161,7 @@ class _LoginFormState extends State<LoginForm> {
                         SizedBox(height: 20),
                         TextButton.icon(
                           onPressed: () {
-                            this.dispose();
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(

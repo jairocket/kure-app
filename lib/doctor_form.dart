@@ -5,6 +5,7 @@ import 'package:mobile/extensions/extensions.dart';
 import 'package:mobile/services/doctor_service.dart';
 import 'components/custom_form_title.dart';
 import 'components/custom_text_input_field.dart';
+import 'main.dart';
 
 class DoctorForm extends StatefulWidget {
   const DoctorForm({super.key});
@@ -57,7 +58,19 @@ class _DoctorFormState extends State<DoctorForm> {
 
   Future<void> saveDoctor(name, crm, phone, email, password) async {
     final DoctorService doctorService = DoctorService.instance;
-    await doctorService.saveDoctor(name, crm, phone, email, password);
+
+    try {
+      await doctorService.saveDoctor(name, crm, phone, email, password);
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MyHomePage()
+          )
+      );
+    } catch(e) {
+      rethrow;
+    }
+
   }
 
   @override
@@ -82,7 +95,7 @@ class _DoctorFormState extends State<DoctorForm> {
                         CustomFormTitle(title: "Crie sua conta"),
                         SizedBox(height: 30),
                         CustomTextInputField(
-                          hintText: "Nome:",
+                          hintText: "Nome",
                           controller: _nameController,
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
@@ -102,7 +115,7 @@ class _DoctorFormState extends State<DoctorForm> {
                         ),
                         SizedBox(height: 15),
                         CustomTextInputField(
-                          hintText: "CRM:",
+                          hintText: "CRM",
                           controller: _crmController,
                           inputFormatters: [_crmFormatter],
                           validator: (value) {
@@ -120,7 +133,7 @@ class _DoctorFormState extends State<DoctorForm> {
                         ),
                         SizedBox(height: 15),
                         CustomTextInputField(
-                          hintText: "Telefone:",
+                          hintText: "Telefone",
                           controller: _phoneController,
                           inputFormatters: [_phoneFormatter],
                           validator: (value) {
@@ -179,7 +192,7 @@ class _DoctorFormState extends State<DoctorForm> {
                             if (value! != _passwordController.text) {
                               return "Senha digitada não confere";
                             }
-                            if (value!.trim().length == 0) {
+                            if (value.trim().length == 0) {
                               return "Confirme a senha";
                             }
                             return null;
@@ -238,6 +251,26 @@ class _DoctorFormState extends State<DoctorForm> {
                             style: TextStyle(fontSize: 16, letterSpacing: 1.2),
                           ),
                         ),
+                        SizedBox(height: 20),
+                        TextButton.icon(
+                          onPressed: () {
+                            this.dispose();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const MyHomePage(),
+                              ),
+                            );
+                          },
+                          icon: Icon(Icons.arrow_back, color: Colors.black87),
+                          label: Text(
+                            'Fazer login',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   ),

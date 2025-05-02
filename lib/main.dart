@@ -11,7 +11,6 @@ import 'package:mobile/patient_form.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:universal_io/io.dart';
 
-
 void main() {
   if(!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
     sqfliteFfiInit();
@@ -56,13 +55,10 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isLoggedIn = true;
   LoggedDoctor? loggedUser = null;
 
   Future<void> setLoggedUser(String email, String password) async {
     final DoctorService _doctorService = DoctorService.instance;
-
-    print("chamando login");
 
     try {
       Map<String,Object?> doctor = await _doctorService.logIn(email, password);
@@ -70,13 +66,10 @@ class MyAppState extends ChangeNotifier {
 
       if(doctor["id"] != null){
         loggedUser = LoggedDoctor(doctor["id"] as int, doctor["name"] as String, doctor["crm"] as String);
-
         selectedPage = SelectedPage.reportScreen;
-
         notifyListeners();
       }
     } catch(e) {
-      print(e);
       rethrow;
     }
   }
@@ -119,7 +112,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
 
-
     Widget page;
   
     switch (selectedPage) {
@@ -135,6 +127,9 @@ class _MyHomePageState extends State<MyHomePage> {
         page = doctorForm;
       case SelectedPage.reportScreen:
         page = reportScreen;
+    }
+    if(appState.loggedUser == null){
+      return LoginForm();
     }
 
     return Scaffold(
@@ -192,15 +187,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       }),
                 ),
                 ListTile(
-                  title: Text("Cadastro"),
-                  leading: Icon(Icons.dynamic_form),
-                  onTap:
-                    () => setState(() {
-                      selectedPage = SelectedPage.doctorForm;
-                      Scaffold.of(context).closeDrawer();
-                    }),
-                ),
-                ListTile(
                   title: Text("Relatório"),
                   leading: Icon(Icons.report),
                   onTap:
@@ -208,13 +194,20 @@ class _MyHomePageState extends State<MyHomePage> {
                       selectedPage = SelectedPage.reportScreen;
                       Scaffold.of(context).closeDrawer();
                     }),
+                ),
+                ListTile(
+                  title: Text("Sair"),
+                  leading: Icon(Icons.exit_to_app),
+                  onTap: () => setState(() {
+                    appState.loggedUser = null;
+                    Scaffold.of(context).closeDrawer();
+                  })
                 )
               ],
             ),
           );
         },
       ),
-
       body: Column(children: [Expanded(child: page)]),
     );
   }
