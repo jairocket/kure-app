@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile/components/custom_text_input_field.dart';
 import 'package:mobile/doctor_form.dart';
 import 'package:mobile/extensions/extensions.dart';
+import 'package:provider/provider.dart';
+
+import 'main.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -25,6 +28,8 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF6F6F6),
       body: SafeArea(
@@ -111,7 +116,40 @@ class _LoginFormState extends State<LoginForm> {
                           width: double.infinity,
                           height: 50,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (_formkey.currentState!.validate()) {
+                                _formkey.currentState!.save();
+                                appState
+                                    .setLoggedUser(email!, password!)
+                                    .then(
+                                      (value) => ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Login efetuado com sucesso!',
+                                          ),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      )
+                                    ).catchError(
+                                      (error) => ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            'Credenciais incorretas. Verifique e tente novamente',
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      ),
+                                    );
+                                _formkey.currentState!.reset();
+                                _emailController.clear();
+                                _passwordController.clear();
+
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF2D72F6),
                               shape: RoundedRectangleBorder(

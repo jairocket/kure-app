@@ -32,3 +32,5 @@ flutter:
 
 intl: any
 provider: ^5.0.0
+dev_dependencies:
+  json_serializable: ^6.9.5

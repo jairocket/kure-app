@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'main.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
@@ -10,6 +13,8 @@ class ReportScreen extends StatefulWidget {
 class _ReportScreenState extends State<ReportScreen> {
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF3F3F1),
       body: Row(
@@ -17,6 +22,7 @@ class _ReportScreenState extends State<ReportScreen> {
           Expanded(
             child: Column(
               children: [
+                Text("Seja bem vindo, ${appState.loggedUser!.name}!"),
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
