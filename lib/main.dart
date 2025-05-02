@@ -11,7 +11,6 @@ import 'package:mobile/patient_form.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:universal_io/io.dart';
 
-
 void main() {
   if(!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
     sqfliteFfiInit();
@@ -44,7 +43,6 @@ class MainApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
         ),
         home: MyHomePage(),
-
       ),
     );
   }
@@ -57,13 +55,10 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool isLoggedIn = true;
   LoggedDoctor? loggedUser = null;
 
   Future<void> setLoggedUser(String email, String password) async {
     final DoctorService _doctorService = DoctorService.instance;
-
-    print("chamando login");
 
     try {
       Map<String,Object?> doctor = await _doctorService.logIn(email, password);

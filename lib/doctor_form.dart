@@ -192,7 +192,7 @@ class _DoctorFormState extends State<DoctorForm> {
                             if (value! != _passwordController.text) {
                               return "Senha digitada não confere";
                             }
-                            if (value!.trim().length == 0) {
+                            if (value.trim().length == 0) {
                               return "Confirme a senha";
                             }
                             return null;
