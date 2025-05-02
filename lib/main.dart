@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/models/doctor.dart';
 import 'package:mobile/new_appointment.dart';
 import 'package:mobile/doctor_form.dart';
 import 'package:mobile/login_form.java.dart';
 import 'package:mobile/report_screen.dart';
+import 'package:mobile/services/doctor_service.dart';
 import 'package:provider/provider.dart';
 import 'package:mobile/patient_form.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
@@ -53,6 +55,36 @@ class MyAppState extends ChangeNotifier {
     selectedPage = newPage;
     notifyListeners();
   }
+
+  bool isLoggedIn = true;
+  LoggedDoctor? loggedUser = null;
+
+  Future<void> setLoggedUser(String email, String password) async {
+    final DoctorService _doctorService = DoctorService.instance;
+
+    print("chamando login");
+
+    try {
+      Map<String,Object?> doctor = await _doctorService.logIn(email, password);
+      print(doctor);
+
+      if(doctor["id"] != null){
+        loggedUser = LoggedDoctor(doctor["id"] as int, doctor["name"] as String, doctor["crm"] as String);
+
+        selectedPage = SelectedPage.reportScreen;
+
+        notifyListeners();
+      }
+    } catch(e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  void logout() {
+    loggedUser = null;
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -72,8 +104,6 @@ enum SelectedPage {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  
-  
   var selectedPage = SelectedPage.home;
   var loginPage = LoginForm();
   var patientFormPage = PatientForm();
@@ -81,18 +111,20 @@ class _MyHomePageState extends State<MyHomePage> {
   var doctorForm = DoctorForm();
   var reportScreen = ReportScreen();
 
-  setSelectedPage(SelectedPage newPage) {
+   setSelectedPage(SelectedPage newPage) {
     selectedPage = newPage;
   } 
   
   @override
   Widget build(BuildContext context) {
-    
+    var appState = context.watch<MyAppState>();
+
+
     Widget page;
   
     switch (selectedPage) {
       case SelectedPage.home:
-        page = loginPage;
+        page = appState.loggedUser != null ? ReportScreen()  : LoginForm() ;
       case SelectedPage.appointments:
         page = Placeholder();
       case SelectedPage.newAppointment:
