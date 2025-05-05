@@ -15,6 +15,7 @@ class CustomTextInputField extends StatelessWidget {
     this.onSuffixTap,
     this.keyboardType = TextInputType.text,
     this.readOnly = false,
+    this.onChanged,
   });
 
   final String hintText;
@@ -28,6 +29,7 @@ class CustomTextInputField extends StatelessWidget {
   final VoidCallback? onSuffixTap;
   final TextInputType keyboardType;
   final bool readOnly;
+  final void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +56,7 @@ class CustomTextInputField extends StatelessWidget {
         onSaved: onSaved,
         controller: controller,
         inputFormatters: [...inputFormatters],
+        onChanged: onChanged,
       ),
     );
   }
