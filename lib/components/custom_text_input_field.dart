@@ -15,6 +15,7 @@ class CustomTextInputField extends StatelessWidget {
     this.onSuffixTap,
     this.keyboardType = TextInputType.text,
     this.readOnly = false,
+    this.onChanged,
   });
 
   final String hintText;
@@ -28,17 +29,18 @@ class CustomTextInputField extends StatelessWidget {
   final VoidCallback? onSuffixTap;
   final TextInputType keyboardType;
   final bool readOnly;
+  final void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: const Color(0xFFEEEEEE),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12),   
       ),
-      child: TextFormField(
-        obscureText: obscureText,
+      child: TextFormField(    
+        obscureText: obscureText, 
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: hintText,
@@ -54,8 +56,9 @@ class CustomTextInputField extends StatelessWidget {
         onSaved: onSaved,
         controller: controller,
         inputFormatters: [...inputFormatters],
-        keyboardType: keyboardType,
+        onChanged: onChanged,
         readOnly: readOnly,
+        keyboardType: keyboardType,
       ),
     );
   }
