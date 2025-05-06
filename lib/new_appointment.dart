@@ -9,6 +9,7 @@ import 'package:mobile/components/custom_time_picker.dart';
 import 'package:mobile/components/date_input.dart';
 import 'package:mobile/extensions/extensions.dart';
 import 'package:mobile/services/appointments_service.dart';
+import 'package:mobile/services/patient_service.dart';
 
 final _cpfFormatter = MaskTextInputFormatter(
   mask: '###.###.###-##',
@@ -22,7 +23,6 @@ class NewAppointmentsPage extends StatefulWidget {
   State<StatefulWidget> createState() => _NewAppointmentsPageState();
 }
 
-bool _isResetting = false;
 final _patientNameController = TextEditingController();
 final _cpfController = TextEditingController();
 final _appointmentDateController = TextEditingController();
@@ -40,7 +40,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
   }
 
   Future<void> _fetchPatientName(String cleanCpf) async {
-    final AppoitmentsService patientService = AppoitmentsService.instance;
+    final PatientService patientService = PatientService.instance;
 
     try {
       String? patientName = await patientService.getPatientNameByCpf(cleanCpf);
@@ -48,12 +48,14 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
         setState(() {
           name = patientName;
           _patientNameController.text = patientName;
-          cpf = cleanCpf; 
+          cpf = cleanCpf;
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Paciente não encontrado!'),
+            content: Text(
+              'Paciente ainda não foi cadastrado. Por favor efetue o cadastro ou confira o CPF antes de tentar novamente',
+            ),
             backgroundColor: Colors.redAccent,
           ),
         );
@@ -178,29 +180,27 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
     if (isValid) {
       _formKey.currentState!.save();
       saveAppointment(name!, cpf!, date!, time!)
-          .then(
-            (value) => ScaffoldMessenger.of(context).showSnackBar(
+          .then((value) {
+            ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('Consulta agendada com sucesso!'),
                 backgroundColor: Colors.green,
               ),
-            ),
-          )
-          .catchError(
-            (error) => ScaffoldMessenger.of(context).showSnackBar(
+            );
+            _cleanInputData();
+          })
+          .catchError((error) {
+            ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text('A consulta não pode ser agendada.'),
                 backgroundColor: Colors.redAccent,
               ),
-            ),
-          );
+            );
+          });
     }
-    _cleanInputData();
   }
 
   void _cleanInputData() {
-    _isResetting = true;
-
     _formKey.currentState?.reset();
     _cpfController.clear();
     _patientNameController.clear();
@@ -212,10 +212,6 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
       cpf = null;
       date = null;
       time = null;
-    });
-
-    Future.delayed(Duration(milliseconds: 100), () {
-      _isResetting = false;
     });
   }
 
@@ -250,6 +246,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                     CustomTextInputField(
                       hintText: "Nome do paciente",
                       controller: _patientNameController,
+                      readOnly: true,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
                           RegExp(r"[a-zA-ZÀ-ÿ\s]"),
@@ -281,16 +278,16 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                       },
                       inputFormatters: [_cpfFormatter],
                       onChanged: (value) {
-                        if (_isResetting) return;
+                        final cleanCpf = value.replaceAll(RegExp(r'\D'), '');
 
-                        final cleanCpf = value.replaceAll(RegExp(r'\D'),'');
                         if (cleanCpf.length == 11) {
-                          final maskedCpf = _cpfFormatter.maskText(
-                            cleanCpf,
-                          );
-                          _fetchPatientName(
-                            maskedCpf,
-                          );
+                          final maskedCpf = _cpfFormatter.maskText(cleanCpf);
+                          _fetchPatientName(maskedCpf);
+                        } else {
+                          setState(() {
+                            name = null;
+                            _patientNameController.clear();
+                          });
                         }
                       },
                       onSaved: (value) {

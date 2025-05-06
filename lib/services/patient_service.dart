@@ -15,31 +15,41 @@ class PatientService {
   static final PatientService instance = PatientService._constructor();
   PatientService._constructor();
 
-  Future<void> savePatient (
-      String name,
-      String cpf,
-      String phone,
-      String birthday,
-      String gender
-      ) async {
-
+  Future<void> savePatient(
+    String name,
+    String cpf,
+    String phone,
+    String birthday,
+    String gender,
+  ) async {
     final db = await _databaseService.database;
 
     try {
-      await db.insert(
-          _patientsTableName,
-          {
-            _patientsNameColumnName: name,
-            _patientsCPFColumnName: cpf,
-            _patientsPhoneColumnName: phone,
-            _patientsBirthdayColumnName: birthday,
-            _patientsGenderColumnName: gender
-          },
-          conflictAlgorithm: ConflictAlgorithm.abort
-      );
-    } catch(e) {
+      await db.insert(_patientsTableName, {
+        _patientsNameColumnName: name,
+        _patientsCPFColumnName: cpf,
+        _patientsPhoneColumnName: phone,
+        _patientsBirthdayColumnName: birthday,
+        _patientsGenderColumnName: gender,
+      }, conflictAlgorithm: ConflictAlgorithm.abort);
+    } catch (e) {
       rethrow;
     }
+  }
 
+  Future<String?> getPatientNameByCpf(String cpf) async {
+    final db = await _databaseService.database;
+
+    final result = await db.query(
+      _patientsTableName,
+      columns: [_patientsNameColumnName],
+      where: '$_patientsCPFColumnName = ?',
+      whereArgs: [cpf],
+    );
+
+    if (result.isNotEmpty) {
+      return result.first[_patientsNameColumnName] as String;
+    }
+    return null;
   }
 }

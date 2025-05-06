@@ -57,6 +57,7 @@ class CustomTextInputField extends StatelessWidget {
         controller: controller,
         inputFormatters: [...inputFormatters],
         onChanged: onChanged,
+        readOnly: readOnly,
       ),
     );
   }

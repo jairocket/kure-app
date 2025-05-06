@@ -5,7 +5,6 @@ class AppoitmentsService {
   final DatabaseService _databaseService = DatabaseService.instance;
 
   final String _appointmentsTableName = 'appointments';
-  final String _patientsTableName = 'patients';
   final String _patientsIdColumnName = 'id';
   final String _patientsNameColumnName = 'name';
   final String _patientsCPFColumnName = 'cpf';
@@ -34,21 +33,5 @@ class AppoitmentsService {
     } catch (e) {
       rethrow;
     }
-  }
-
-  Future<String?> getPatientNameByCpf(String cpf) async {
-    final db = await _databaseService.database;
-
-    final result = await db.query(
-      _patientsTableName, 
-      columns: [_patientsNameColumnName],
-      where: '$_patientsCPFColumnName = ?',
-      whereArgs: [cpf], 
-    );
-
-    if (result.isNotEmpty) {
-      return result.first[_patientsNameColumnName] as String;
-    }
-    return null;
   }
 }
