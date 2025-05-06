@@ -32,13 +32,13 @@ class CustomTextInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         color: const Color(0xFFEEEEEE),
-        borderRadius: BorderRadius.circular(12),   
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: TextFormField(    
-        obscureText: obscureText, 
+      child: TextFormField(
+        obscureText: obscureText,
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: hintText,
@@ -54,6 +54,8 @@ class CustomTextInputField extends StatelessWidget {
         onSaved: onSaved,
         controller: controller,
         inputFormatters: [...inputFormatters],
+        keyboardType: keyboardType,
+        readOnly: readOnly,
       ),
     );
   }
