@@ -46,6 +46,17 @@ class DatabaseService {
             )        
           '''
         );
+
+        await db.execute(
+          '''
+            CREATE TABLE IF NOT EXISTS 'appointments' (
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            cpf TEXT NOT NULL,
+            name TEXT NOT NULL,
+            date TEXT NOT NULL,
+            time TEXT NOT NULL
+            )
+          ''');
       },
     );
     return database;

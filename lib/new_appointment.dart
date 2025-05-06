@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobile/components/custom_form_title.dart';
 import 'package:mobile/components/custom_text_input_field.dart';
 import 'package:mobile/components/custom_time_picker.dart';
 import 'package:mobile/components/date_input.dart';
+import 'package:mobile/extensions/extensions.dart';
+import 'package:mobile/services/appointments_service.dart';
+import 'package:mobile/services/patient_service.dart';
+
+final _cpfFormatter = MaskTextInputFormatter(
+  mask: '###.###.###-##',
+  filter: {"#": RegExp(r'[0-9]')},
+);
 
 class NewAppointmentsPage extends StatefulWidget {
   const NewAppointmentsPage({super.key});
@@ -14,20 +24,54 @@ class NewAppointmentsPage extends StatefulWidget {
 }
 
 final _patientNameController = TextEditingController();
+final _cpfController = TextEditingController();
 final _appointmentDateController = TextEditingController();
 final _appointmentTimeController = TextEditingController();
 
-DateTime? _appointmentDate;
-TimeOfDay? _appointmentTime;
-String? _patientName;
+String? name, cpf, date, time;
 
 class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
-
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  Future<void> saveAppointment(name, cpf, date, time) async {
+    final AppoitmentsService patientService = AppoitmentsService.instance;
+
+    await patientService.saveAppointment(name, cpf, date, time);
+  }
+
+  Future<void> _fetchPatientName(String cleanCpf) async {
+    final PatientService patientService = PatientService.instance;
+
+    try {
+      String? patientName = await patientService.getPatientNameByCpf(cleanCpf);
+      if (patientName != null) {
+        setState(() {
+          name = patientName;
+          _patientNameController.text = patientName;
+          cpf = cleanCpf;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Paciente ainda não foi cadastrado. Por favor efetue o cadastro ou confira o CPF antes de tentar novamente',
+            ),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao buscar o paciente.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+  }
 
   Future<void> _datePicker() async {
-    DateTime? date = await showDatePicker(
+    DateTime? appointmentDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
@@ -36,15 +80,12 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
 
     initializeDateFormatting("pt_BR", null);
 
-    if (date != null) {
+    if (appointmentDate != null) {
       setState(() {
-        _appointmentDate = date;
-
-
-        _appointmentDateController.text =
-            "${date.day.toString().padLeft(2, '0')}/"
-            "${date.month.toString().padLeft(2, '0')}/"
-            "${date.year}";
+        date = DateFormat.yMd("pt_BR").format(appointmentDate);
+        _appointmentDateController.text = DateFormat.yMd(
+          "pt_BR",
+        ).format(appointmentDate);
       });
     }
   }
@@ -64,9 +105,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
       ),
       builder: (BuildContext context) {
         return SizedBox(
-          height:
-              MediaQuery.of(context).size.height *
-              0.95, 
+          height: MediaQuery.of(context).size.height * 0.95,
           child: Column(
             children: [
               Padding(
@@ -102,15 +141,15 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                   ),
                   itemCount: avaliableTimes.length,
                   itemBuilder: (context, index) {
-                    final horario = avaliableTimes[index];
-                    final textoHorario =
-                        "${horario.hour.toString().padLeft(2, '0')}:${horario.minute.toString().padLeft(2, '0')}";
+                    final timeTable = avaliableTimes[index];
+                    final timeTableText =
+                        "${timeTable.hour.toString().padLeft(2, '0')}:${timeTable.minute.toString().padLeft(2, '0')}";
 
                     return ElevatedButton(
                       onPressed: () {
                         setState(() {
-                          _appointmentTime = horario;
-                          _appointmentTimeController.text = textoHorario;
+                          time = timeTableText;
+                          _appointmentTimeController.text = timeTableText;
                         });
                         Navigator.pop(context);
                       },
@@ -121,16 +160,14 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                         ),
                       ),
                       child: Text(
-                        textoHorario,
+                        timeTableText,
                         style: const TextStyle(color: Colors.white),
                       ),
                     );
                   },
                 ),
               ),
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 20),
             ],
           ),
         );
@@ -140,32 +177,41 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
 
   void _makeAppointment() {
     final isValid = _formKey.currentState!.validate();
-    final inputName = _patientName != null;
-    final selectedDate = _appointmentDate != null;
-    final selectedTime = _appointmentTime != null;
-
-    if (isValid && selectedDate && selectedTime && inputName) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Consulta agendada com sucesso!')));
-
-      _cleanInputData();
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Preencha todos os campos!')));
+    if (isValid) {
+      _formKey.currentState!.save();
+      saveAppointment(name!, cpf!, date!, time!)
+          .then((value) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Consulta agendada com sucesso!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            _cleanInputData();
+          })
+          .catchError((error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('A consulta não pode ser agendada.'),
+                backgroundColor: Colors.redAccent,
+              ),
+            );
+          });
     }
   }
 
   void _cleanInputData() {
     _formKey.currentState?.reset();
+    _cpfController.clear();
     _patientNameController.clear();
     _appointmentDateController.clear();
     _appointmentTimeController.clear();
 
     setState(() {
-      _appointmentDate = null;
-      _appointmentTime = null;
+      name = null;
+      cpf = null;
+      date = null;
+      time = null;
     });
   }
 
@@ -200,6 +246,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                     CustomTextInputField(
                       hintText: "Nome do paciente",
                       controller: _patientNameController,
+                      readOnly: true,
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
                           RegExp(r"[a-zA-ZÀ-ÿ\s]"),
@@ -214,10 +261,40 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                       onSaved:
                           (value) => setState(() {
                             if (value != null) {
-                              _patientName = value;
+                              name = value;
                             }
                           }),
                     ),
+
+                    SizedBox(height: 15),
+                    CustomTextInputField(
+                      hintText: "Digite o CPF",
+                      controller: _cpfController,
+                      validator: (value) {
+                        if (!value!.isCPFValid) {
+                          return "Digite um CPF válido. Apenas números.";
+                        }
+                        return null;
+                      },
+                      inputFormatters: [_cpfFormatter],
+                      onChanged: (value) {
+                        final cleanCpf = value.replaceAll(RegExp(r'\D'), '');
+
+                        if (cleanCpf.length == 11) {
+                          final maskedCpf = _cpfFormatter.maskText(cleanCpf);
+                          _fetchPatientName(maskedCpf);
+                        } else {
+                          setState(() {
+                            name = null;
+                            _patientNameController.clear();
+                          });
+                        }
+                      },
+                      onSaved: (value) {
+                        cpf = value;
+                      },
+                    ),
+
                     SizedBox(height: 15),
                     CustomDateInput(
                       controller: _appointmentDateController,
@@ -264,7 +341,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                       ),
                     ),
 
-                                       Padding(
+                    Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ElevatedButton(
                         onPressed: _cleanInputData,
@@ -279,12 +356,15 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                             side: BorderSide(
                               color: const Color(0xFF2D72F6),
                               width: 2,
-                            )
+                            ),
                           ),
                         ),
                         child: Text(
                           "Limpar campos",
-                          style: TextStyle(fontSize: 16, color: const Color(0xFF2D72F6),),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: const Color(0xFF2D72F6),
+                          ),
                         ),
                       ),
                     ),
