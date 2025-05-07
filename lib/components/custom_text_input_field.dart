@@ -58,6 +58,7 @@ class CustomTextInputField extends StatelessWidget {
         inputFormatters: [...inputFormatters],
         onChanged: onChanged,
         readOnly: readOnly,
+        keyboardType: keyboardType,
       ),
     );
   }

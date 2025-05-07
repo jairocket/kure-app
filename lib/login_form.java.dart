@@ -14,12 +14,13 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   String? email, password;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
+  @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
 
@@ -28,16 +29,16 @@ class _LoginFormState extends State<LoginForm> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Center(
                   child: CircleAvatar(
                     radius: 40,
-                    backgroundColor: Color(0xFF2D72F6),
-                    child: Text(
+                    backgroundColor: const Color(0xFF2D72F6),
+                    child: const Text(
                       'K',
                       style: TextStyle(
                         fontSize: 36,
@@ -47,20 +48,20 @@ class _LoginFormState extends State<LoginForm> {
                     ),
                   ),
                 ),
-                SizedBox(height: 15),
-                Center(
+                const SizedBox(height: 15),
+                const Center(
                   child: Text(
                     "Kure App",
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.w500),
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Container(
-                  padding: EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     color: Colors.white,
-                    boxShadow: [
+                    boxShadow: const [
                       BoxShadow(
                         color: Colors.black12,
                         blurRadius: 10,
@@ -81,13 +82,14 @@ class _LoginFormState extends State<LoginForm> {
                             }
                             return null;
                           },
-                          onSaved:
-                              (value) => {
-                                if (value != null) {email = value},
-                              },
+                          onSaved: (value) {
+                            if (value != null) {
+                              email = value;
+                            }
+                          },
                           inputFormatters: [],
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         CustomTextInputField(
                           hintText: "Digite sua senha",
                           controller: _passwordController,
@@ -97,14 +99,23 @@ class _LoginFormState extends State<LoginForm> {
                             }
                             return null;
                           },
-                          onSaved:
-                              (value) => {
-                                if (value != null) {password = value},
-                              },
+                          onSaved: (value) {
+                            if (value != null) {
+                              password = value;
+                            }
+                          },
                           inputFormatters: [],
                           obscureText: _obscurePassword,
+                          suffixIcon: _obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          onSuffixTap: () {
+                            setState(() {
+                              _obscurePassword = !_obscurePassword;
+                            });
+                          },
                         ),
-                        SizedBox(height: 30),
+                        const SizedBox(height: 30),
                         SizedBox(
                           width: double.infinity,
                           height: 50,
@@ -112,19 +123,17 @@ class _LoginFormState extends State<LoginForm> {
                             onPressed: () {
                               if (_formkey.currentState!.validate()) {
                                 _formkey.currentState!.save();
-                                appState
-                                    .setLoggedUser(email!, password!)
-                                    .then(
+                                appState.setLoggedUser(email!, password!).then(
                                       (value) => ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
-                                        SnackBar(
+                                        const SnackBar(
                                           content: Text(
                                             'Login efetuado com sucesso!',
                                           ),
                                           backgroundColor: Colors.green,
                                         ),
-                                      )
+                                      ),
                                     ).catchError(
                                       (error) => ScaffoldMessenger.of(
                                         context,
@@ -140,7 +149,6 @@ class _LoginFormState extends State<LoginForm> {
                                 _formkey.currentState!.reset();
                                 _emailController.clear();
                                 _passwordController.clear();
-
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -158,10 +166,9 @@ class _LoginFormState extends State<LoginForm> {
                             ),
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         TextButton.icon(
                           onPressed: () {
-
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -169,8 +176,8 @@ class _LoginFormState extends State<LoginForm> {
                               ),
                             );
                           },
-                          icon: Icon(Icons.add, color: Colors.black87),
-                          label: Text(
+                          icon: const Icon(Icons.add, color: Colors.black87),
+                          label: const Text(
                             'Criar Nova conta',
                             style: TextStyle(
                               fontSize: 14,
