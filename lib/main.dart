@@ -93,11 +93,6 @@ class MyAppState extends ChangeNotifier {
   }
 
   List<Appointment> appointments = List<Appointment>.empty(growable: true);
-  @override
-  void initState() async {
-   await setAppointmentsMapByDoctorId(loggedUser!.id);
-
-  }
 
 }
 
