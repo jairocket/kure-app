@@ -25,12 +25,7 @@ class AppointmentsService {
   ) async {
     final db = await _databaseService.database;
 
-    print("vou tentar salvar");
-    print('doctor $doctor_id');
-    print('patient $patient_id');
-
     try {
-
       await db.insert(_appointmentsTableName, {
         _doctorIdColumnName: doctor_id,
         _patientIdColumnName: patient_id,
@@ -43,4 +38,38 @@ class AppointmentsService {
       rethrow;
     }
   }
+
+  Future<Iterable<Map<String, Object?>>> getAppointments(int doctorId) async {
+    final db = await _databaseService.database;
+    try {
+      List<Map<String, Object?>> appointmentsMap = await db.rawQuery(
+          '''
+            SELECT a.id, a.date, a.time, p.name as patient_name FROM $_appointmentsTableName a
+              INNER JOIN patients p ON p.id = a.patient_id 
+              WHERE a.doctor_id = ?;
+          ''',
+        [doctorId]
+      );
+      if(appointmentsMap.isEmpty) {
+        return [];
+      }
+
+      print(appointmentsMap.first["id"]);
+      print(appointmentsMap.first["patient_name"]);
+      print(appointmentsMap.first["date"]);
+      print(appointmentsMap.first["times"]);
+
+      return appointmentsMap.map(
+              (appointment) => {
+                "id": appointment["id"],
+                "patient_name": appointment["patient_name"],
+                "date": appointment["date"],
+                "time": appointment["time"]
+              }
+      );
+    } catch(e){
+      rethrow;
+    }
+  }
+
 }

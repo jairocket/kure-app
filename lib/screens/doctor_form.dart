@@ -70,7 +70,6 @@ class _DoctorFormState extends State<DoctorForm> {
     } catch(e) {
       rethrow;
     }
-
   }
 
   @override

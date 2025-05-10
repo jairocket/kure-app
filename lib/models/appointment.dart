@@ -1,11 +1,11 @@
 class Appointment {
-  final int doctor_id;
+  final int id;
   final String patient_name;
   final String time;
   final String date;
 
   Appointment(
-      this.doctor_id,
+      this.id,
       this.patient_name,
       this.time,
       this.date,
@@ -13,7 +13,7 @@ class Appointment {
 
   Map<String, Object?> toMap() {
     return {
-      'doctor_id': doctor_id,
+      'id': id,
       'patient_name': patient_name,
       'time': time,
       'date': date,
@@ -22,6 +22,6 @@ class Appointment {
 
   @override
   String toString() {
-    return 'Paciente {doctor_id: ${doctor_id}, patient_name: ${patient_name}, time: ${time}, date: ${date}}';
+    return 'Paciente {id: ${id}, patient_name: ${patient_name}, time: ${time}, date: ${date}}';
   }
 }
