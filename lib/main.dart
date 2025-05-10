@@ -1,15 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/models/doctor.dart';
-import 'package:mobile/new_appointment.dart';
-import 'package:mobile/doctor_form.dart';
-import 'package:mobile/login_form.java.dart';
-import 'package:mobile/report_screen.dart';
+import 'package:mobile/screens/appointments.dart';
+import 'package:mobile/screens/new_appointment.dart';
+import 'package:mobile/screens/doctor_form.dart';
+import 'package:mobile/screens/login_form.java.dart';
+import 'package:mobile/screens/report_screen.dart';
+import 'package:mobile/services/appointments_service.dart';
 import 'package:mobile/services/doctor_service.dart';
 import 'package:provider/provider.dart';
-import 'package:mobile/patient_form.dart';
+import 'package:mobile/screens/patient_form.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:universal_io/io.dart';
+
+import 'models/appointment.dart';
 
 void main() {
   if(!kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
@@ -32,9 +36,7 @@ class MainApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         routes: {
           '/login': (context) => LoginForm(),
-          '/newAppointment': (context) => NewAppointmentsPage(),
           '/newDoctor': (context) => DoctorForm(),
-          '/newPatient': (context) => PatientForm(),
           '/report/screen': (context) => ReportScreen()
         },
         title: "Kure App",
@@ -56,13 +58,11 @@ class MyAppState extends ChangeNotifier {
   }
 
   LoggedDoctor? loggedUser = null;
-
   Future<void> setLoggedUser(String email, String password) async {
     final DoctorService _doctorService = DoctorService.instance;
 
     try {
       Map<String,Object?> doctor = await _doctorService.logIn(email, password);
-      print(doctor);
 
       if(doctor["id"] != null){
         loggedUser = LoggedDoctor(doctor["id"] as int, doctor["name"] as String, doctor["crm"] as String);
@@ -73,11 +73,27 @@ class MyAppState extends ChangeNotifier {
       rethrow;
     }
   }
-
   void logout() {
     loggedUser = null;
     notifyListeners();
   }
+
+  Future<void> setAppointmentsMapByDoctorId(int doctorId) async {
+    final AppointmentsService appointmentsService = AppointmentsService.instance;
+     var appointmentsMap = await appointmentsService.getAppointments(doctorId);
+       appointments = appointmentsMap.map(
+              (appointment) => Appointment(
+              appointment["id"] as int,
+              appointment["patient_name"] as String,
+              appointment["time"] as String,
+              appointment["date"] as String
+          )
+      ).toList();
+       notifyListeners();
+  }
+
+  List<Appointment> appointments = List<Appointment>.empty(growable: true);
+
 }
 
 class MyHomePage extends StatefulWidget {
@@ -103,6 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var appointmentFormPage = NewAppointmentsPage();
   var doctorForm = DoctorForm();
   var reportScreen = ReportScreen();
+  var appointments = AppointmentsPage();
 
    setSelectedPage(SelectedPage newPage) {
     selectedPage = newPage;
@@ -118,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
       case SelectedPage.home:
         page = appState.loggedUser != null ? ReportScreen()  : LoginForm() ;
       case SelectedPage.appointments:
-        page = Placeholder();
+        page = appointments;
       case SelectedPage.newAppointment:
         page = appointmentFormPage;
       case SelectedPage.newPatient:
