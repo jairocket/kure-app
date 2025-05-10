@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/models/doctor.dart';
-import 'package:mobile/new_appointment.dart';
-import 'package:mobile/doctor_form.dart';
-import 'package:mobile/login_form.java.dart';
-import 'package:mobile/report_screen.dart';
+import 'package:mobile/screens/new_appointment.dart';
+import 'package:mobile/screens/doctor_form.dart';
+import 'package:mobile/screens/login_form.java.dart';
+import 'package:mobile/screens/report_screen.dart';
 import 'package:mobile/services/doctor_service.dart';
 import 'package:provider/provider.dart';
-import 'package:mobile/patient_form.dart';
+import 'package:mobile/screens/patient_form.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:universal_io/io.dart';
 
@@ -32,9 +32,7 @@ class MainApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         routes: {
           '/login': (context) => LoginForm(),
-          '/newAppointment': (context) => NewAppointmentsPage(),
           '/newDoctor': (context) => DoctorForm(),
-          '/newPatient': (context) => PatientForm(),
           '/report/screen': (context) => ReportScreen()
         },
         title: "Kure App",
@@ -56,7 +54,6 @@ class MyAppState extends ChangeNotifier {
   }
 
   LoggedDoctor? loggedUser = null;
-
   Future<void> setLoggedUser(String email, String password) async {
     final DoctorService _doctorService = DoctorService.instance;
 
@@ -73,11 +70,12 @@ class MyAppState extends ChangeNotifier {
       rethrow;
     }
   }
-
   void logout() {
     loggedUser = null;
     notifyListeners();
   }
+
+
 }
 
 class MyHomePage extends StatefulWidget {

@@ -52,4 +52,27 @@ class PatientService {
     }
     return null;
   }
+
+  Future<Map<String, Object?>> getPatientDataByCpf(String cpf) async {
+    final db = await _databaseService.database;
+    try {
+      List<Map<String, Object?>> loggedDoctorMap = await db.query(
+        _patientsTableName,
+        where: '$_patientsCPFColumnName = ?',
+        whereArgs: [cpf],
+      );
+
+      if(loggedDoctorMap.length == 0) {
+        throw Exception("Paciente nao encontrado");
+      }
+
+      return {
+        "id": loggedDoctorMap.first[_patientsIdColumnName],
+        "name": loggedDoctorMap.first[_patientsNameColumnName],
+      };
+    } catch (e) {
+      rethrow;
+    }
+  }
+
 }

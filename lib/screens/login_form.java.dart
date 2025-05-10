@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/custom_text_input_field.dart';
-import 'package:mobile/doctor_form.dart';
+import 'package:mobile/screens/doctor_form.dart';
 import 'package:mobile/extensions/extensions.dart';
 import 'package:provider/provider.dart';
 
-import 'main.dart';
+import '../main.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});

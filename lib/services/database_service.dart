@@ -21,7 +21,7 @@ class DatabaseService {
 
     final database = await openDatabase(
       databasePath,
-      version: 3,
+      version: 5,
       onCreate: (db, version) async {
         await db.execute(
           '''
@@ -33,7 +33,9 @@ class DatabaseService {
               birthday TEXT NOT NULL,
               gender TEXT NOT NULL
             )                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-          ''');
+          '''
+        );
+
         await db.execute(
           '''
             CREATE TABLE IF NOT EXISTS 'doctors' (
@@ -50,11 +52,13 @@ class DatabaseService {
         await db.execute(
           '''
             CREATE TABLE IF NOT EXISTS 'appointments' (
-            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-            cpf TEXT NOT NULL,
-            name TEXT NOT NULL,
-            date TEXT NOT NULL,
-            time TEXT NOT NULL
+              id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+              doctor_id INTEGER NOT NULL,
+              patient_id INTEGER NOT NULL,
+              cpf TEXT NOT NULL,
+              name TEXT NOT NULL,
+              date TEXT NOT NULL,
+              time TEXT NOT NULL
             )
           ''');
       },

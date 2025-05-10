@@ -10,6 +10,9 @@ import 'package:mobile/components/date_input.dart';
 import 'package:mobile/extensions/extensions.dart';
 import 'package:mobile/services/appointments_service.dart';
 import 'package:mobile/services/patient_service.dart';
+import 'package:provider/provider.dart';
+
+import '../main.dart';
 
 final _cpfFormatter = MaskTextInputFormatter(
   mask: '###.###.###-##',
@@ -29,25 +32,38 @@ final _appointmentDateController = TextEditingController();
 final _appointmentTimeController = TextEditingController();
 
 String? name, cpf, date, time;
+int? patients_id, doctors_id;
 
 class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Future<void> saveAppointment(name, cpf, date, time) async {
-    final AppoitmentsService patientService = AppoitmentsService.instance;
+  Future<void> saveAppointment(loggedUserId, name, cpf, date, time) async {
+    if(loggedUserId == null) {
+      throw Exception("É preciso estar logado para agendar uma consulta");
+    }
 
-    await patientService.saveAppointment(name, cpf, date, time);
+    if(patients_id == null) {
+      throw Exception("Indique um paciente");
+    }
+
+    print(loggedUserId);
+    print(patients_id);
+
+    final AppointmentsService patientService = AppointmentsService.instance;
+
+    await patientService.saveAppointment(loggedUserId, patients_id!, name, cpf, date, time);
   }
 
-  Future<void> _fetchPatientName(String cleanCpf) async {
+  Future<void> _fetchPatientData(String cleanCpf) async {
     final PatientService patientService = PatientService.instance;
-
     try {
-      String? patientName = await patientService.getPatientNameByCpf(cleanCpf);
-      if (patientName != null) {
+      Map<String,Object?> patientData = await patientService.getPatientDataByCpf(cleanCpf);
+      if (patientData["name"] != null) {
+
         setState(() {
-          name = patientName;
-          _patientNameController.text = patientName;
+          name = patientData["name"] as String;
+          patients_id = patientData["id"] as int;
+          _patientNameController.text = patientData["name"] as String;;
           cpf = cleanCpf;
         });
       } else {
@@ -175,31 +191,6 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
     );
   }
 
-  void _makeAppointment() {
-    final isValid = _formKey.currentState!.validate();
-    if (isValid) {
-      _formKey.currentState!.save();
-      saveAppointment(name!, cpf!, date!, time!)
-          .then((value) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Consulta agendada com sucesso!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-            _cleanInputData();
-          })
-          .catchError((error) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('A consulta não pode ser agendada.'),
-                backgroundColor: Colors.redAccent,
-              ),
-            );
-          });
-    }
-  }
-
   void _cleanInputData() {
     _formKey.currentState?.reset();
     _cpfController.clear();
@@ -217,6 +208,9 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
 
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    int? loggedUserId = appState.loggedUser?.id;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -282,7 +276,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
 
                         if (cleanCpf.length == 11) {
                           final maskedCpf = _cpfFormatter.maskText(cleanCpf);
-                          _fetchPatientName(maskedCpf);
+                          _fetchPatientData(maskedCpf);
                         } else {
                           setState(() {
                             name = null;
@@ -323,7 +317,34 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                     ),
                     SizedBox(height: 30),
                     ElevatedButton(
-                      onPressed: _makeAppointment,
+                      onPressed: () {
+                        final isValid = _formKey.currentState!.validate();
+                        if (isValid) {
+                          _formKey.currentState!.save();
+                          saveAppointment(loggedUserId, name!, cpf!, date!, time!)
+                              .then((value) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Consulta agendada com sucesso!'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                            _cleanInputData();
+                          })
+                              .catchError((error) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(error.toString()),
+                                backgroundColor: Colors.redAccent,
+                              ),
+                            );
+                          });
+                        }
+                      },
+
+
+
+
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2D72F6),
                         foregroundColor: Colors.white,
