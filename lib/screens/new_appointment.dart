@@ -37,7 +37,7 @@ int? patients_id, doctors_id;
 class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Future<void> saveAppointment(loggedUserId, name, cpf, date, time) async {
+  Future<void> saveAppointment(loggedUserId, date, time) async {
     if(loggedUserId == null) {
       throw Exception("É preciso estar logado para agendar uma consulta");
     }
@@ -46,12 +46,9 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
       throw Exception("Indique um paciente");
     }
 
-    print(loggedUserId);
-    print(patients_id);
-
     final AppointmentsService patientService = AppointmentsService.instance;
 
-    await patientService.saveAppointment(loggedUserId, patients_id!, name, cpf, date, time);
+    await patientService.saveAppointment(loggedUserId, patients_id!, date, time);
   }
 
   Future<void> _fetchPatientData(String cleanCpf) async {
@@ -59,7 +56,6 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
     try {
       Map<String,Object?> patientData = await patientService.getPatientDataByCpf(cleanCpf);
       if (patientData["name"] != null) {
-
         setState(() {
           name = patientData["name"] as String;
           patients_id = patientData["id"] as int;
@@ -107,7 +103,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
   }
 
   void _timePicker() {
-    final List<TimeOfDay> avaliableTimes = List.generate(
+    final List<TimeOfDay> availableTimes = List.generate(
       20,
       (index) => TimeOfDay(hour: 8 + (index ~/ 2), minute: (index % 2) * 30),
     );
@@ -155,9 +151,9 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                     crossAxisSpacing: 10,
                     childAspectRatio: 2.5,
                   ),
-                  itemCount: avaliableTimes.length,
+                  itemCount: availableTimes.length,
                   itemBuilder: (context, index) {
-                    final timeTable = avaliableTimes[index];
+                    final timeTable = availableTimes[index];
                     final timeTableText =
                         "${timeTable.hour.toString().padLeft(2, '0')}:${timeTable.minute.toString().padLeft(2, '0')}";
 
@@ -199,6 +195,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
     _appointmentTimeController.clear();
 
     setState(() {
+      patients_id = null;
       name = null;
       cpf = null;
       date = null;
@@ -321,7 +318,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                         final isValid = _formKey.currentState!.validate();
                         if (isValid) {
                           _formKey.currentState!.save();
-                          saveAppointment(loggedUserId, name!, cpf!, date!, time!)
+                          saveAppointment(loggedUserId, date!, time!)
                               .then((value) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -341,10 +338,6 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                           });
                         }
                       },
-
-
-
-
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2D72F6),
                         foregroundColor: Colors.white,

@@ -29,8 +29,11 @@ dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - images/
 
 intl: any
 provider: ^5.0.0
 dev_dependencies:
   json_serializable: ^6.9.5
+

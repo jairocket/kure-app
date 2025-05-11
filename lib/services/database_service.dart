@@ -17,7 +17,7 @@ class DatabaseService {
   Future<Database> getDatabase() async {
     final databaseDirectoryPath = await getDatabasesPath();
     final databasePath = join(databaseDirectoryPath, 'k_database.db');
-    //await deleteDatabase(databasePath);
+    await deleteDatabase(databasePath);
 
     final database = await openDatabase(
       databasePath,
@@ -55,8 +55,6 @@ class DatabaseService {
               id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
               doctor_id INTEGER NOT NULL,
               patient_id INTEGER NOT NULL,
-              cpf TEXT NOT NULL,
-              name TEXT NOT NULL,
               date TEXT NOT NULL,
               time TEXT NOT NULL
             )
