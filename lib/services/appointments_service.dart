@@ -50,11 +50,6 @@ class AppointmentsService {
         return List<Map<String, Object>>.empty(growable: true);
       }
 
-      print(appointmentsMap.first["id"]);
-      print(appointmentsMap.first["patient_name"]);
-      print(appointmentsMap.first["date"]);
-      print(appointmentsMap.first["time"]);
-
       return appointmentsMap.map(
               (appointment) => {
                 "id": appointment["id"],
