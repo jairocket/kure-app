@@ -22,6 +22,7 @@ class CustomTimeInput extends StatelessWidget {
       onTap: onTap,
       child: AbsorbPointer(
         child: Container(
+          height: 48,
           decoration: BoxDecoration(
             color: const Color(0xFFEEEEEE),
             borderRadius: BorderRadius.circular(12),
