@@ -6,6 +6,7 @@ import 'package:mobile/components/custom_form_title.dart';
 import 'package:mobile/components/custom_gender_options.dart';
 import 'package:mobile/components/date_input.dart';
 import 'package:mobile/extensions/extensions.dart';
+import 'package:mobile/services/cep_service.dart';
 import 'package:mobile/services/patient_service.dart';
 import '../components/custom_text_input_field.dart';
 import 'package:intl/intl.dart';
@@ -16,6 +17,13 @@ final TextEditingController _cpfController = TextEditingController();
 final TextEditingController _phoneController = TextEditingController();
 final TextEditingController _birthdayController = TextEditingController();
 final TextEditingController _genderController = TextEditingController();
+final TextEditingController _cepController = TextEditingController();
+final TextEditingController _streetController = TextEditingController();
+final TextEditingController _streetNumberController = TextEditingController();
+final TextEditingController _complementController = TextEditingController();
+final TextEditingController _neighborhoodController = TextEditingController();
+final TextEditingController _cityController = TextEditingController();
+final TextEditingController _stateController = TextEditingController();
 
 final _cpfFormatter = MaskTextInputFormatter(
   mask: '###.###.###-##',
@@ -24,6 +32,11 @@ final _cpfFormatter = MaskTextInputFormatter(
 
 final _cellPhoneFormater = MaskTextInputFormatter(
   mask: '(##) #####-####',
+  filter: {"#": RegExp(r'[0-9]')},
+);
+
+final _cepFormatter = MaskTextInputFormatter(
+  mask: '#####-###',
   filter: {"#": RegExp(r'[0-9]')},
 );
 
@@ -37,12 +50,66 @@ class PatientForm extends StatefulWidget {
 class _PatientFormState extends State<PatientForm> {
   GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   String? name, cpf, phoneNumber, gender, birthday;
+  String? cep,
+      street,
+      streetNumber,
+      complement,
+      neighborhood,
+      addressComplement,
+      city,
+      state;
   bool _showGenderWarning = false;
 
-  Future<void> savePatient(name, cpf, phone, birthday, gender) async {
+  Future<void> savePatient(
+    name,
+    cpf,
+    phone,
+    birthday,
+    gender,
+    cep,
+    street,
+    streetNumber,
+    complement,
+    neighborhood,
+    city,
+    state,
+  ) async {
     final PatientService patientService = PatientService.instance;
 
-    await patientService.savePatient(name, cpf, phone, birthday, gender);
+    await patientService.savePatient(
+      name,
+      cpf,
+      phone,
+      birthday,
+      gender,
+      cep,
+      street,
+      streetNumber,
+      complement,
+      neighborhood,
+      city,
+      state,
+    );
+  }
+
+  Future<void> getAddress() async {
+    final cep = _cepController.text;
+      final address = await CepService.getAddressByCep(cep);
+    if (address != null) {
+      setState(() {
+        _streetController.text = address['logradouro'] ?? '';
+        _neighborhoodController.text = address['bairro'] ?? '';
+        _cityController.text = address['localidade'] ?? '';
+        _stateController.text = address['uf'] ?? '';
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("CEP inválido ou não encontrado"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Future<void> selectDate() async {
@@ -93,7 +160,7 @@ class _PatientFormState extends State<PatientForm> {
                       CustomFormTitle(title: "Cadastrar Paciente"),
                       SizedBox(height: 30),
                       CustomTextInputField(
-                        hintText: "Digite o nome completo",
+                        hintText: "Nome completo",
                         controller: _nameController,
                         inputFormatters: [],
                         validator: (value) {
@@ -110,49 +177,214 @@ class _PatientFormState extends State<PatientForm> {
                             }),
                       ),
                       SizedBox(height: 15),
-                      CustomTextInputField(
-                        hintText: "Digite o CPF",
-                        controller: _cpfController,
-                        validator: (value) {
-                          if (!value!.isCPFValid) {
-                            return "Digite um CPF válido. Apenas números.";
-                          }
-                          return null;
-                        },
-                        inputFormatters: [_cpfFormatter],
-                        onSaved:
-                            (value) => setState(() {
-                              cpf = value;
-                            }),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 6,
+                            child: CustomTextInputField(
+                              hintText: "CPF",
+                              controller: _cpfController,
+                              validator: (value) {
+                                if (!value!.isCPFValid) {
+                                  return "CPF inválido";
+                                }
+                                return null;
+                              },
+                              inputFormatters: [_cpfFormatter],
+                              onSaved:
+                                  (value) => setState(() {
+                                    cpf = value;
+                                  }),
+                            ),
+                          ),
+                          SizedBox(width: 5),
+                          Expanded(
+                            flex: 5,
+                            child: CustomDateInput(
+                              controller: _birthdayController,
+                              labelText: 'Nascimento',
+                              validator: (value) {
+                                if (!value!.isValidPatientName) {
+                                  return "Data inválida";
+                                }
+                                return null;
+                              },
+                              onTap: selectDate,
+                              onSaved: (value) => setState(() {}),
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 15),
-                      CustomTextInputField(
-                        hintText: "Digite o telefone",
-                        controller: _phoneController,
-                        inputFormatters: [_cellPhoneFormater],
-                        validator: (value) {
-                          if (!value!.isValidPhone) {
-                            return "Digite um número válido. Apenas números.";
-                          }
-                          return null;
-                        },
-                        onSaved:
-                            (value) => setState(() {
-                              phoneNumber = value;
-                            }),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 5,
+                            child: CustomTextInputField(
+                              hintText: "Telefone",
+                              controller: _phoneController,
+                              inputFormatters: [_cellPhoneFormater],
+                              validator: (value) {
+                                if (!value!.isValidPhone) {
+                                  return "Telefone inválido";
+                                }
+                                return null;
+                              },
+                              onSaved:
+                                  (value) => setState(() {
+                                    phoneNumber = value;
+                                  }),
+                            ),
+                          ),
+                          SizedBox(width: 5),
+                          Expanded(
+                            flex: 4,
+                            child: CustomTextInputField(
+                              hintText: "CEP",
+                              controller: _cepController,
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null || value.length != 9) {
+                                  return "CEP inválido";
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                if(value.length == 9) {
+                                  getAddress();
+                                }
+                              },
+                              onSaved:
+                                  (value) => setState(() {
+                                    if (value != null) {
+                                      cep = value;
+                                    }
+                                  }),
+                              inputFormatters: [_cepFormatter],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      SizedBox(height: 15),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Container(
+                              child: CustomTextInputField(
+                                hintText: "Rua",
+                                controller: _streetController,
+                                validator: (value) => null,
+                                onSaved:
+                                    (value) => setState(() {
+                                      if (value != null) {
+                                        street = value;
+                                      }
+                                    }),
+                                inputFormatters: [],
+                                readOnly: true,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Expanded(
+                            child: CustomTextInputField(
+                              hintText: "n",
+                              controller: _streetNumberController,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "informe";
+                                }
+                                return null;
+                              },
+                              onSaved:
+                                  (value) => setState(() {
+                                    if (value != null) {
+                                      streetNumber = value;
+                                    }
+                                  }),
+                              inputFormatters: [],
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 15),
-                      CustomDateInput(
-                        controller: _birthdayController,
-                        labelText: 'Data de nascimento',
-                        validator: (value) {
-                          if (!value!.isValidPatientName) {
-                            return "Selecione a data de nascimento";
-                          }
-                          return null;
-                        },
-                        onTap: selectDate,
-                        onSaved: (value) => setState(() {}),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 5,
+                            child: CustomTextInputField(
+                              hintText: "Complemento",
+                              controller: _complementController,
+                              inputFormatters: [],
+                              validator: (value) => null,
+                              onSaved:
+                                  (value) => setState(() {
+                                    if (value != null) {
+                                      complement = value;
+                                    } else {
+                                      complement = "";
+                                    }
+                                  }),
+                            ),
+                          ),
+                          SizedBox(width: 5),
+                          Expanded(
+                            flex: 4,
+                            child: CustomTextInputField(
+                              hintText: "Bairro",
+                              controller: _neighborhoodController,
+                              validator: (value) => null,
+                              onSaved:
+                                  (value) => setState(() {
+                                    if (value != null) {
+                                      neighborhood = value;
+                                    }
+                                  }),
+                              inputFormatters: [],
+                              readOnly: true,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 15),
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              child: CustomTextInputField(
+                                hintText: "Cidade",
+                                controller: _cityController,
+                                validator: (value) => null,
+                                onSaved:
+                                    (value) => setState(() {
+                                      if (value != null) {
+                                        city = value;
+                                      }
+                                    }),
+                                inputFormatters: [],
+                                readOnly: true,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Expanded(
+                            child: CustomTextInputField(
+                              hintText: "Estado",
+                              controller: _stateController,
+                              validator: (value) => null,
+                              onSaved:
+                                  (value) => setState(() {
+                                    if (value != null) {
+                                      state = value;
+                                    }
+                                  }),
+                              inputFormatters: [],
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 15),
                       GenderButton(
@@ -174,7 +406,7 @@ class _PatientFormState extends State<PatientForm> {
                                   "Escolha uma opção",
                                   style: TextStyle(
                                     color: Colors.red.shade600,
-                                    fontSize: 12,
+                                    fontSize: 11,
                                   ),
                                 ),
                               ),
@@ -196,36 +428,76 @@ class _PatientFormState extends State<PatientForm> {
                           if (_formkey.currentState!.validate() &&
                               !_showGenderWarning) {
                             _formkey.currentState!.save();
-                            savePatient(name!, cpf!, phoneNumber!, birthday!, gender!,)
-                              .then(
-                                (value) => ScaffoldMessenger.of(context)
-                                .showSnackBar(
-                                  SnackBar(
-                                    content: Text('Paciente cadastrado com sucesso!'),
-                                    backgroundColor: Colors.green,
+                            savePatient(
+                                  name!,
+                                  cpf!,
+                                  phoneNumber!,
+                                  birthday!,
+                                  gender!,
+                                  cep!,
+                                  street!,
+                                  streetNumber!,
+                                  complement!,
+                                  neighborhood!,
+                                  city!,
+                                  state!,
+                                )
+                                .then(
+                                  (value) => ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Paciente cadastrado com sucesso!',
+                                      ),
+                                      backgroundColor: Colors.green,
+                                    ),
                                   ),
-                                ),
-                              ).catchError(
-                                  (error) => ScaffoldMessenger.of(context)
-                                  .showSnackBar(
+                                )
+                                .catchError(
+                                  (error) => ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(
                                     SnackBar(
                                       content: Text('Paciente já cadastrado.'),
                                       backgroundColor: Colors.redAccent,
                                     ),
                                   ),
                                 );
+                            print({
+                              "cep": cep,
+                              "rua": street,
+                              "numero": streetNumber,
+                              "complemento": complement,
+                              "cidade": city,
+                              "state": state,
+                            });
+
                             _formkey.currentState!.reset();
                             _nameController.clear();
                             _cpfController.clear();
                             _phoneController.clear();
                             _birthdayController.clear();
                             _genderController.clear();
+                            _stateController.clear();
+                            _streetNumberController.clear();
+                            _complementController.clear();
+                            _cepController.clear();
+                            _cityController.clear();
+                            _stateController.clear();
+
                             setState(() {
                               name = null;
                               cpf = null;
                               phoneNumber = null;
                               gender = null;
                               birthday = null;
+                              street = null;
+                              streetNumber = null;
+                              complement = null;
+                              cep = null;
+                              city = null;
+                              state = null;
                             });
                           }
                         },

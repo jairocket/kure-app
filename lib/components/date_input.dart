@@ -18,6 +18,7 @@ class CustomDateInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 48,
       padding: EdgeInsets.symmetric(horizontal: 10.0),
       decoration: BoxDecoration(
         color: Color(0xFFEEEEEE),
@@ -29,7 +30,7 @@ class CustomDateInput extends StatelessWidget {
           labelText: labelText,
           labelStyle: TextStyle(
             color: Colors.grey.shade700,
-            fontSize: 14,
+            fontSize: 16,
           ),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(vertical: 14),

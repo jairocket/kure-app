@@ -2,10 +2,9 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseService {
-
   static Database? _db;
   static final DatabaseService instance = DatabaseService._constructor();
-  
+
   DatabaseService._constructor();
 
   Future<Database> get database async {
@@ -16,15 +15,15 @@ class DatabaseService {
 
   Future<Database> getDatabase() async {
     final databaseDirectoryPath = await getDatabasesPath();
-    final databasePath = join(databaseDirectoryPath, 'k_database.db');
+    final databasePath = join(databaseDirectoryPath, 'kure_database.db');
     await deleteDatabase(databasePath);
 
     final database = await openDatabase(
       databasePath,
-      version: 5,
+      version: 6,
+      onConfigure: (db) async => await db.execute("PRAGMA foreign_keys = ON"),
       onCreate: (db, version) async {
-        await db.execute(
-          '''
+        await db.execute('''
             CREATE TABLE IF NOT EXISTS 'patients' (
               id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
               name TEXT NOT NULL, 
@@ -33,11 +32,24 @@ class DatabaseService {
               birthday TEXT NOT NULL,
               gender TEXT NOT NULL
             )                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
-          '''
-        );
+          ''');
 
-        await db.execute(
-          '''
+        await db.execute('''
+            CREATE TABLE IF NOT EXISTS 'addresses' (
+              id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+              cep TEXT NOT NULL,
+              street TEXT NOT NULL, 
+              number TEXT NOT NULL, 
+              complement TEXT, 
+              neighborhood TEXT NOT NULL,
+              city TEXT NOT NULL,
+              state TEXT NOT NULL,
+              patient_id INTEGER NOT NULL,
+              FOREIGN KEY (patient_id) REFERENCES 'patients' (id)
+            );                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+          ''');
+
+        await db.execute('''
             CREATE TABLE IF NOT EXISTS 'doctors' (
               id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
               name TEXT NOT NULL,
@@ -46,11 +58,9 @@ class DatabaseService {
               email TEXT UNIQUE NOT NULL,
               password TEXT NOT NULL
             )        
-          '''
-        );
+          ''');
 
-        await db.execute(
-          '''
+        await db.execute('''
             CREATE TABLE IF NOT EXISTS 'appointments' (
               id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
               doctor_id INTEGER NOT NULL,
@@ -63,8 +73,4 @@ class DatabaseService {
     );
     return database;
   }
-
-  }
-
-
-
+}
