@@ -51,8 +51,6 @@ class PatientService {
         _patientsGenderColumnName: gender,
       }, conflictAlgorithm: ConflictAlgorithm.abort);
 
-      print(_patientId);
-
       await db.insert(_addressesTableName, {
         _cepColumnName: cep,
         _streetColumnName: street,
