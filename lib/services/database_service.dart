@@ -16,7 +16,7 @@ class DatabaseService {
   Future<Database> getDatabase() async {
     final databaseDirectoryPath = await getDatabasesPath();
     final databasePath = join(databaseDirectoryPath, 'kure_database.db');
-    await deleteDatabase(databasePath);
+  //  await deleteDatabase(databasePath);
 
     final database = await openDatabase(
       databasePath,

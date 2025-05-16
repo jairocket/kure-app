@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CustomFormTitle extends StatelessWidget {
-  const CustomFormTitle({
+class CustomTitle extends StatelessWidget {
+  const CustomTitle({
     super.key,
     required this.title
   });
@@ -12,7 +12,7 @@ class CustomFormTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        title.toUpperCase(),
+        title,
         textAlign: TextAlign.center,
         style: TextStyle(
           color: Colors.black,

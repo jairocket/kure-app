@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:mobile/extensions/extensions.dart';
 import 'package:mobile/services/doctor_service.dart';
-import '../components/custom_form_title.dart';
+import '../components/custom_title.dart';
 import '../components/custom_text_input_field.dart';
 import '../main.dart';
 
@@ -91,7 +91,7 @@ class _DoctorFormState extends State<DoctorForm> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        CustomFormTitle(title: "Crie sua conta"),
+                        CustomTitle(title: "Crie sua conta"),
                         SizedBox(height: 30),
                         CustomTextInputField(
                           hintText: "Nome",

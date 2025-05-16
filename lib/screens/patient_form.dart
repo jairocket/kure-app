@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:mobile/components/custom_form_title.dart';
+import 'package:mobile/components/custom_title.dart';
 import 'package:mobile/components/custom_gender_options.dart';
 import 'package:mobile/components/date_input.dart';
 import 'package:mobile/extensions/extensions.dart';
@@ -157,7 +157,7 @@ class _PatientFormState extends State<PatientForm> {
                   key: _formkey,
                   child: Column(
                     children: [
-                      CustomFormTitle(title: "Cadastrar Paciente"),
+                      CustomTitle(title: "Cadastrar Paciente"),
                       SizedBox(height: 30),
                       CustomTextInputField(
                         hintText: "Nome completo",
