@@ -129,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
 
-    appState.loggedUser = LoggedDoctor(1, "jai", "12345");
+   // appState.loggedUser = LoggedDoctor(1, "jai", "12345");
 
     Widget page;
   
@@ -157,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
           builder: (context) {
             return IconButton(
               onPressed: Scaffold.of(context).openDrawer,
-              icon: Icon(Icons.menu),
+              icon: Icon(Icons.menu, color: const Color(0xFF2D72F6)),
               padding: EdgeInsets.symmetric(horizontal: 30),
             );
           },

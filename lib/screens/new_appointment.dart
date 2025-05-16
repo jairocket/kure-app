@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:mobile/components/custom_form_title.dart';
+import 'package:mobile/components/custom_title.dart';
 import 'package:mobile/components/custom_text_input_field.dart';
 import 'package:mobile/components/custom_time_picker.dart';
 import 'package:mobile/components/date_input.dart';
@@ -232,7 +232,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    CustomFormTitle(title: "Agendar Consulta"),
+                    CustomTitle(title: "Agendar Consulta"),
                     SizedBox(height: 30),
                     CustomTextInputField(
                       hintText: "Nome do paciente",
