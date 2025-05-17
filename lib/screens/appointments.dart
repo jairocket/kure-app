@@ -24,11 +24,17 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   Widget _buildTile(Appointment appointment) {
     return ListTile(
       onTap: () => {},
+      minTileHeight: 80,
+      leading: Icon(
+        size: 30,
+        Icons.access_time_filled,
+        color: const Color(0xFF2D72F6),
+      ),
       title: Container(
         child: Flex(
           direction: Axis.horizontal,
           mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
               width: 175,
@@ -50,11 +56,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
               ),
             ),
             SizedBox(width: 1),
-            Icon(
-              size: 30,
-              Icons.access_time_filled,
-              color: const Color(0xFF2D72F6),
-            ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -68,7 +69,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
                 ),
               ],
             ),
-            SizedBox(width: 5.1),
+            SizedBox(width: 10),
             IconButton(
               iconSize: 30,
               onPressed: () => {},
@@ -110,7 +111,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
               borderRadius: BorderRadius.circular(30),
             ),
             child: ListView.builder(
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+              padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
               itemCount: appState.appointments.length,
               itemBuilder: (context, index) {
                 return appointmentList[index];
