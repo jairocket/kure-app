@@ -10,7 +10,8 @@ class AppointmentsService {
   final String _appointmentDateColumnName = 'date';
   final String _appointmentTimeColumnName = 'time';
 
-  static final AppointmentsService instance = AppointmentsService._constructor();
+  static final AppointmentsService instance =
+      AppointmentsService._constructor();
   AppointmentsService._constructor();
 
   Future<void> saveAppointment(
@@ -37,30 +38,61 @@ class AppointmentsService {
     final db = await _databaseService.database;
     try {
       List<Map<String, Object?>> appointmentsMap = await db.rawQuery(
-          '''
+        '''
             SELECT a.id, a.date, a.time, p.name as patient_name FROM $_appointmentsTableName a
               INNER JOIN patients p ON p.id = a.patient_id 
               WHERE a.doctor_id = ?
               ORDER BY a.date, a.time ASC;
           ''',
-        [doctorId]
+        [doctorId],
       );
 
-      if(appointmentsMap.isEmpty) {
+      if (appointmentsMap.isEmpty) {
         return List<Map<String, Object>>.empty(growable: true);
       }
 
       return appointmentsMap.map(
-              (appointment) => {
-                "id": appointment["id"],
-                "patient_name": appointment["patient_name"],
-                "date": appointment["date"],
-                "time": appointment["time"]
-              }
+        (appointment) => {
+          "id": appointment["id"],
+          "patient_name": appointment["patient_name"],
+          "date": appointment["date"],
+          "time": appointment["time"],
+        },
       );
-    } catch(e){
+    } catch (e) {
       rethrow;
     }
   }
 
+  Future<bool> isTimeSlotAvailable(
+    int doctorId,
+    String date,
+    String time,
+  ) async {
+    final db = await _databaseService.database;
+
+    final result = await db.query(
+      _appointmentsTableName,
+      where:
+          '$_doctorIdColumnName = ? AND $_appointmentDateColumnName = ? AND $_appointmentTimeColumnName = ?',
+      whereArgs: [doctorId, date, time],
+    );
+
+    return result.isEmpty;
+  }
+
+  Future<List<String>> getUnavailableTimes(String date, int doctorId) async {
+    final db = await _databaseService.database;
+
+    final result = await db.query(
+      _appointmentsTableName,
+      columns: [_appointmentTimeColumnName],
+      where: '$_appointmentDateColumnName = ? AND $_doctorIdColumnName = ?',
+      whereArgs: [date, doctorId],
+    );
+
+    return result
+        .map((row) => row[_appointmentTimeColumnName] as String)
+        .toList();
+  }
 }
