@@ -23,6 +23,13 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
 
   Widget _buildTile(Appointment appointment) {
     return ListTile(
+      onTap: () => {},
+      minTileHeight: 80,
+      leading: Icon(
+        size: 30,
+        Icons.access_time_filled,
+        color: const Color(0xFF2D72F6),
+      ),
       title: Container(
         child: Flex(
           direction: Axis.horizontal,
@@ -30,54 +37,47 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: 160,
+              width: 175,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                      "Nome",
-                      style: TextStyle(color: Colors.grey.shade700, wordSpacing: 2)
+                    "Nome",
+                    style: TextStyle(
+                      color: Colors.grey.shade700,
+                      wordSpacing: 2,
+                    ),
                   ),
                   Text(
-                      appointment.patient_name,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
-                  )
+                    appointment.patient_name,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
                 ],
               ),
             ),
-            SizedBox(width: 3),
-            Icon(size: 18, Icons.access_time_filled, color: const Color(0xFF2D72F6)),
-            SizedBox(width: 10),
+            SizedBox(width: 1),
             Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                      "Horário",
-                      style: TextStyle(color: Colors.grey.shade700, wordSpacing: 2),
-                  ),
-                  Text(
-                      appointment.time,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
-                  )
-                ],
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Horário",
+                  style: TextStyle(color: Colors.grey.shade700, wordSpacing: 2),
+                ),
+                Text(
+                  appointment.time,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+              ],
             ),
+            SizedBox(width: 10),
             IconButton(
-              iconSize: 20,
-              onPressed: () => {},
-              icon: const Icon(
-                Icons.edit_calendar_outlined,
-                color: const Color(0xFF2D72F6),
-              ),
-            ),
-            IconButton(
-              iconSize: 20,
+              iconSize: 30,
               onPressed: () => {},
               icon: const Icon(
                 Icons.delete_outline_rounded,
                 color: Colors.redAccent,
               ),
             ),
-            Divider()
           ],
         ),
       ),
@@ -104,14 +104,14 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
         Expanded(
           child: Container(
             alignment: Alignment.centerRight,
-            margin: EdgeInsets.all(10),
-            padding: const EdgeInsets.symmetric(vertical: 10),
+            margin: EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(vertical: 15),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(30),
             ),
             child: ListView.builder(
-              padding: EdgeInsets.fromLTRB(2.4, 0, 0, 10),
+              padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
               itemCount: appState.appointments.length,
               itemBuilder: (context, index) {
                 return appointmentList[index];
