@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/components/custom_text_input_field.dart';
+import 'package:mobile/screens/forget_password.dart';
 import 'package:mobile/screens/doctor_form.dart';
 import 'package:mobile/extensions/extensions.dart';
 import 'package:provider/provider.dart';
@@ -106,15 +107,29 @@ class _LoginFormState extends State<LoginForm> {
                           },
                           inputFormatters: [],
                           obscureText: _obscurePassword,
-                          suffixIcon: _obscurePassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
+                          suffixIcon:
+                              _obscurePassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                           onSuffixTap: () {
                             setState(() {
                               _obscurePassword = !_obscurePassword;
                             });
                           },
                         ),
+                        const SizedBox(height: 10),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ChangePasswordPage(),
+                              ),
+                            );
+                          },
+                          child: const Text('Esqueceu a senha?', style: TextStyle(color:  const Color(0xFF2D72F6), fontSize: 16)),
+                        ),
+
                         const SizedBox(height: 30),
                         SizedBox(
                           width: double.infinity,
@@ -123,7 +138,9 @@ class _LoginFormState extends State<LoginForm> {
                             onPressed: () {
                               if (_formkey.currentState!.validate()) {
                                 _formkey.currentState!.save();
-                                appState.setLoggedUser(email!, password!).then(
+                                appState
+                                    .setLoggedUser(email!, password!)
+                                    .then(
                                       (value) => ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
@@ -134,14 +151,13 @@ class _LoginFormState extends State<LoginForm> {
                                           backgroundColor: Colors.green,
                                         ),
                                       ),
-                                    ).catchError(
+                                    )
+                                    .catchError(
                                       (error) => ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
                                         SnackBar(
-                                          content: Text(
-                                            error.toString(),
-                                          ),
+                                          content: Text(error.toString()),
                                           backgroundColor: Colors.red,
                                         ),
                                       ),

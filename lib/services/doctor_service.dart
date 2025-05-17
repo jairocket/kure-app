@@ -72,4 +72,25 @@ class DoctorService {
     List<int> passwordBytes = utf8.encode(password);
     return base64Encode(passwordBytes);
   }
+
+      Future<void> changePasswordByEmail(String email, String newPassword) async {
+    final db = await _databaseService.database;
+
+    final result = await db.query(
+      'doctors',
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+
+    if (result.isEmpty) {
+      throw Exception("Usuário com e-mail $email não encontrado.");
+    }
+
+    await db.update(
+      'doctors',
+      {'password': newPassword},
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+  }
 }
