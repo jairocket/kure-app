@@ -27,7 +27,8 @@ class CustomDateInput extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         decoration: InputDecoration(
-          labelText: labelText,
+          suffixIcon: Icon(Icons.calendar_month, color: Colors.grey),
+          hintText: labelText,
           labelStyle: TextStyle(
             color: Colors.grey.shade700,
             fontSize: 16,
