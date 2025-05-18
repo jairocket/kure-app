@@ -123,7 +123,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     hintText: "Digite sua nova senha",
                     controller: newPasswordController,
                     validator: (value) {
-                      if (value!.length < 8) {
+                      if (value!.isValidPassword) {
                         return "Digite uma senha válida";
                       }
                       return null;

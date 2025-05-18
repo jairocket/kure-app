@@ -18,6 +18,8 @@ class _DoctorFormState extends State<DoctorForm> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String? name, crm, phone, email, password, repeatedPassword;
+  bool _obscureNewPassword = true;
+  bool _obscureConfirmPassword = true;
 
   final _nameController = TextEditingController();
   final _crmController = TextEditingController();
@@ -26,7 +28,6 @@ class _DoctorFormState extends State<DoctorForm> {
   final _passwordController = TextEditingController();
   final _repeatedPasswordController = TextEditingController();
 
-  bool _obscureText = true;
   final _phoneFormatter = MaskTextInputFormatter(
     mask: '(##) #####-####',
     filter: {"#": RegExp(r'[0-9]')},
@@ -181,7 +182,16 @@ class _DoctorFormState extends State<DoctorForm> {
                                 password = value;
                               }),
                           inputFormatters: [],
-                          obscureText: _obscureText,
+                          obscureText: _obscureNewPassword,
+                          suffixIcon:
+                          _obscureNewPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          onSuffixTap: () {
+                            setState(() {
+                              _obscureNewPassword = !_obscureNewPassword;
+                            });
+                          },
                         ),
                         SizedBox(height: 15),
                         CustomTextInputField(
@@ -201,7 +211,16 @@ class _DoctorFormState extends State<DoctorForm> {
                                 repeatedPassword = value;
                               }),
                           inputFormatters: [],
-                          obscureText: _obscureText,
+                          obscureText: _obscureConfirmPassword,
+                          suffixIcon:
+                          _obscureConfirmPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          onSuffixTap: () {
+                            setState(() {
+                              _obscureConfirmPassword = !_obscureConfirmPassword;
+                            });
+                          },
                         ),
                         SizedBox(height: 30),
                         ElevatedButton(
