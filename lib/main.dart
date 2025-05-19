@@ -86,7 +86,8 @@ class MyAppState extends ChangeNotifier {
               appointment["id"] as int,
               appointment["patient_name"] as String,
               appointment["time"] as String,
-              appointment["date"] as String
+              appointment["date"] as String,
+              (appointment["cancelled"] == 1)
           )
       ).toList();
        notifyListeners();

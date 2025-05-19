@@ -16,11 +16,11 @@ class DatabaseService {
   Future<Database> getDatabase() async {
     final databaseDirectoryPath = await getDatabasesPath();
     final databasePath = join(databaseDirectoryPath, 'kure_database.db');
-  //  await deleteDatabase(databasePath);
+    //await deleteDatabase(databasePath);
 
     final database = await openDatabase(
       databasePath,
-      version: 6,
+      version: 7,
       onConfigure: (db) async => await db.execute("PRAGMA foreign_keys = ON"),
       onCreate: (db, version) async {
         await db.execute('''
@@ -66,7 +66,8 @@ class DatabaseService {
               doctor_id INTEGER NOT NULL,
               patient_id INTEGER NOT NULL,
               date TEXT NOT NULL,
-              time TEXT NOT NULL
+              time TEXT NOT NULL,
+              cancelled INTEGER NOT NULL
             )
           ''');
       },
