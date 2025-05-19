@@ -5,6 +5,7 @@ import 'package:mobile/models/appointment.dart';
 import 'package:provider/provider.dart';
 
 import '../main.dart';
+import '../services/appointments_service.dart';
 
 class AppointmentsPage extends StatefulWidget {
   @override
@@ -19,6 +20,11 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     if (appState.loggedUser != null) {
       appState.setAppointmentsMapByDoctorId(appState.loggedUser!.id);
     }
+  }
+
+  Future<void> cancelAppointmentById(int id) async {
+    final AppointmentsService appointmentsService = AppointmentsService.instance;
+    await appointmentsService.cancelAppointmentById(id);
   }
 
   Widget _buildTile(Appointment appointment) {
@@ -72,7 +78,9 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
             SizedBox(width: 10),
             IconButton(
               iconSize: 30,
-              onPressed: () => {},
+              onPressed: () async => {
+                await cancelAppointmentById(appointment.id)
+              },
               icon: const Icon(
                 Icons.delete_outline_rounded,
                 color: Colors.redAccent,
@@ -87,7 +95,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    print(appState.appointments);
 
     if (appState.appointments.isEmpty) {
       return EmptyState();
