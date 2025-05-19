@@ -31,7 +31,7 @@ class CustomTimeInput extends StatelessWidget {
           child: TextFormField(
             controller: controller,
             decoration: InputDecoration(
-              labelText: labelText,
+              hintText: labelText,
               suffixIcon: Icon(
                 Icons.access_time,
                 color: Colors.grey,

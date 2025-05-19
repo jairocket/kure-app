@@ -48,7 +48,7 @@ class AppointmentsService {
         [doctorId]
       );
 
-      if(appointmentsMap.isEmpty) {
+      if (appointmentsMap.isEmpty) {
         return List<Map<String, Object>>.empty(growable: true);
       }
 
@@ -61,9 +61,40 @@ class AppointmentsService {
                 "cancelled": appointment["cancelled"]
               }
       );
-    } catch(e){
+    } catch (e) {
       rethrow;
     }
   }
 
+  Future<bool> isTimeSlotAvailable(
+    int doctorId,
+    String date,
+    String time,
+  ) async {
+    final db = await _databaseService.database;
+
+    final result = await db.query(
+      _appointmentsTableName,
+      where:
+          '$_doctorIdColumnName = ? AND $_appointmentDateColumnName = ? AND $_appointmentTimeColumnName = ?',
+      whereArgs: [doctorId, date, time],
+    );
+
+    return result.isEmpty;
+  }
+
+  Future<List<String>> getUnavailableTimes(String date, int doctorId) async {
+    final db = await _databaseService.database;
+
+    final result = await db.query(
+      _appointmentsTableName,
+      columns: [_appointmentTimeColumnName],
+      where: '$_appointmentDateColumnName = ? AND $_doctorIdColumnName = ?',
+      whereArgs: [date, doctorId],
+    );
+
+    return result
+        .map((row) => row[_appointmentTimeColumnName] as String)
+        .toList();
+  }
 }

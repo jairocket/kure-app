@@ -38,28 +38,33 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future<void> saveAppointment(loggedUserId, date, time) async {
-    if(loggedUserId == null) {
+    if (loggedUserId == null) {
       throw Exception("É preciso estar logado para agendar uma consulta");
     }
 
-    if(patients_id == null) {
+    if (patients_id == null) {
       throw Exception("Indique um paciente");
     }
 
     final AppointmentsService patientService = AppointmentsService.instance;
 
-    await patientService.saveAppointment(loggedUserId, patients_id!, date, time);
+    await patientService.saveAppointment(
+      loggedUserId,
+      patients_id!,
+      date,
+      time,
+    );
   }
 
   Future<void> _fetchPatientData(String cleanCpf) async {
     final PatientService patientService = PatientService.instance;
     try {
-      Map<String,Object?> patientData = await patientService.getPatientDataByCpf(cleanCpf);
+      Map<String, Object?> patientData = await patientService.getPatientDataByCpf(cleanCpf);
       if (patientData["name"] != null) {
         setState(() {
           name = patientData["name"] as String;
           patients_id = patientData["id"] as int;
-          _patientNameController.text = patientData["name"] as String;;
+          _patientNameController.text = patientData["name"] as String;
           cpf = cleanCpf;
         });
       } else {
@@ -102,10 +107,31 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
     }
   }
 
-  void _timePicker() {
+  Future<void> _timePicker() async {
+    if (date == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor, selecione a data primeiro.'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    final appState = context.read<MyAppState>();
+    final doctorId = appState.loggedUser?.id;
+
+    if (doctorId == null) return;
+
     final List<TimeOfDay> availableTimes = List.generate(
       20,
       (index) => TimeOfDay(hour: 8 + (index ~/ 2), minute: (index % 2) * 30),
+    );
+
+    final AppointmentsService service = AppointmentsService.instance;
+    List<String> unavailableTimes = await service.getUnavailableTimes(
+      date!,
+      doctorId,
     );
 
     showModalBottomSheet(
@@ -134,9 +160,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                     ),
                     IconButton(
                       icon: Icon(Icons.close),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                      onPressed: () => Navigator.pop(context),
                     ),
                   ],
                 ),
@@ -153,27 +177,34 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                   ),
                   itemCount: availableTimes.length,
                   itemBuilder: (context, index) {
-                    final timeTable = availableTimes[index];
-                    final timeTableText =
-                        "${timeTable.hour.toString().padLeft(2, '0')}:${timeTable.minute.toString().padLeft(2, '0')}";
+                    final timeSlot = availableTimes[index];
+                    final timeSlotText = "${timeSlot.hour.toString().padLeft(2, '0')}:${timeSlot.minute.toString().padLeft(2, '0')}";
+                    final isUnavailable = unavailableTimes.contains(timeSlotText);
 
-                    return ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          time = timeTableText;
-                          _appointmentTimeController.text = timeTableText;
-                        });
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(49, 39, 79, 1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
+                    return Tooltip(
+                      message: isUnavailable ? "Horário indisponível" : "",
+                      child: ElevatedButton.icon(
+                        onPressed: isUnavailable ? null : () {setState(() {
+                                    time = timeSlotText;
+                                    _appointmentTimeController.text =
+                                        timeSlotText;
+                                  });
+                                  _formKey.currentState?.validate();
+                                  Navigator.pop(context);
+                                },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isUnavailable ? Colors.grey[300] : const Color(0xFF2D72F6),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        timeTableText,
-                        style: const TextStyle(color: Colors.white),
+                        icon: isUnavailable ? const Icon(Icons.block, color: Colors.black38, size: 16,) : const SizedBox.shrink(),
+                        label: Text(
+                          timeSlotText,
+                          style: TextStyle(
+                            color: isUnavailable ? Colors.black38 : Colors.white,
+                          ),
+                        ),
                       ),
                     );
                   },
@@ -320,22 +351,24 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                           _formKey.currentState!.save();
                           saveAppointment(loggedUserId, date!, time!)
                               .then((value) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Consulta agendada com sucesso!'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                            _cleanInputData();
-                          })
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Consulta agendada com sucesso!',
+                                    ),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                                _cleanInputData();
+                              })
                               .catchError((error) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(error.toString()),
-                                backgroundColor: Colors.redAccent,
-                              ),
-                            );
-                          });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(error.toString()),
+                                    backgroundColor: Colors.redAccent,
+                                  ),
+                                );
+                              });
                         }
                       },
                       style: ElevatedButton.styleFrom(
