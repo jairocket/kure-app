@@ -9,6 +9,7 @@ class AppointmentsService {
   final String _patientIdColumnName = 'patient_id';
   final String _appointmentDateColumnName = 'date';
   final String _appointmentTimeColumnName = 'time';
+  final String _cancelledAppointmentColumnName = 'cancelled';
 
   static final AppointmentsService instance = AppointmentsService._constructor();
   AppointmentsService._constructor();
@@ -27,6 +28,7 @@ class AppointmentsService {
         _patientIdColumnName: patient_id,
         _appointmentDateColumnName: date,
         _appointmentTimeColumnName: time,
+        _cancelledAppointmentColumnName: 0
       }, conflictAlgorithm: ConflictAlgorithm.abort);
     } catch (e) {
       rethrow;
@@ -38,7 +40,7 @@ class AppointmentsService {
     try {
       List<Map<String, Object?>> appointmentsMap = await db.rawQuery(
           '''
-            SELECT a.id, a.date, a.time, p.name as patient_name FROM $_appointmentsTableName a
+            SELECT a.id, a.date, a.time, a.cancelled, p.name as patient_name FROM $_appointmentsTableName a
               INNER JOIN patients p ON p.id = a.patient_id 
               WHERE a.doctor_id = ?
               ORDER BY a.date, a.time ASC;
@@ -55,7 +57,8 @@ class AppointmentsService {
                 "id": appointment["id"],
                 "patient_name": appointment["patient_name"],
                 "date": appointment["date"],
-                "time": appointment["time"]
+                "time": appointment["time"],
+                "cancelled": appointment["cancelled"]
               }
       );
     } catch(e){

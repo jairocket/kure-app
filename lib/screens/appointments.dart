@@ -87,6 +87,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    print(appState.appointments);
 
     if (appState.appointments.isEmpty) {
       return EmptyState();
