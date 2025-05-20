@@ -11,6 +11,7 @@ import 'package:mobile/extensions/extensions.dart';
 import 'package:mobile/services/appointments_service.dart';
 import 'package:mobile/services/patient_service.dart';
 import 'package:provider/provider.dart';
+import 'package:currency_textfield/currency_textfield.dart';
 
 import '../main.dart';
 
@@ -30,14 +31,19 @@ final _patientNameController = TextEditingController();
 final _cpfController = TextEditingController();
 final _appointmentDateController = TextEditingController();
 final _appointmentTimeController = TextEditingController();
+final _currencyController = CurrencyTextFieldController(
+  currencySymbol: "R\$",
+  decimalSymbol: ",",
+  thousandSymbol: ".",
+);
 
 String? name, cpf, date, time;
-int? patients_id, doctors_id;
+int? patients_id, doctors_id, priceInCents;
 
 class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Future<void> saveAppointment(loggedUserId, date, time) async {
+  Future<void> saveAppointment(loggedUserId, date, time, priceInCents) async {
     if (loggedUserId == null) {
       throw Exception("É preciso estar logado para agendar uma consulta");
     }
@@ -47,19 +53,20 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
     }
 
     final AppointmentsService patientService = AppointmentsService.instance;
-
     await patientService.saveAppointment(
       loggedUserId,
       patients_id!,
       date,
       time,
+      priceInCents
     );
   }
 
   Future<void> _fetchPatientData(String cleanCpf) async {
     final PatientService patientService = PatientService.instance;
     try {
-      Map<String, Object?> patientData = await patientService.getPatientDataByCpf(cleanCpf);
+      Map<String, Object?> patientData = await patientService
+          .getPatientDataByCpf(cleanCpf);
       if (patientData["name"] != null) {
         setState(() {
           name = patientData["name"] as String;
@@ -178,13 +185,20 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                   itemCount: availableTimes.length,
                   itemBuilder: (context, index) {
                     final timeSlot = availableTimes[index];
-                    final timeSlotText = "${timeSlot.hour.toString().padLeft(2, '0')}:${timeSlot.minute.toString().padLeft(2, '0')}";
-                    final isUnavailable = unavailableTimes.contains(timeSlotText);
+                    final timeSlotText =
+                        "${timeSlot.hour.toString().padLeft(2, '0')}:${timeSlot.minute.toString().padLeft(2, '0')}";
+                    final isUnavailable = unavailableTimes.contains(
+                      timeSlotText,
+                    );
 
                     return Tooltip(
                       message: isUnavailable ? "Horário indisponível" : "",
                       child: ElevatedButton.icon(
-                        onPressed: isUnavailable ? null : () {setState(() {
+                        onPressed:
+                            isUnavailable
+                                ? null
+                                : () {
+                                  setState(() {
                                     time = timeSlotText;
                                     _appointmentTimeController.text =
                                         timeSlotText;
@@ -193,16 +207,27 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                                   Navigator.pop(context);
                                 },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isUnavailable ? Colors.grey[300] : const Color(0xFF2D72F6),
+                          backgroundColor:
+                              isUnavailable
+                                  ? Colors.grey[300]
+                                  : const Color(0xFF2D72F6),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        icon: isUnavailable ? const Icon(Icons.block, color: Colors.black38, size: 16,) : const SizedBox.shrink(),
+                        icon:
+                            isUnavailable
+                                ? const Icon(
+                                  Icons.block,
+                                  color: Colors.black38,
+                                  size: 16,
+                                )
+                                : const SizedBox.shrink(),
                         label: Text(
                           timeSlotText,
                           style: TextStyle(
-                            color: isUnavailable ? Colors.black38 : Colors.white,
+                            color:
+                                isUnavailable ? Colors.black38 : Colors.white,
                           ),
                         ),
                       ),
@@ -224,6 +249,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
     _patientNameController.clear();
     _appointmentDateController.clear();
     _appointmentTimeController.clear();
+    _currencyController.clear();
 
     setState(() {
       patients_id = null;
@@ -231,6 +257,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
       cpf = null;
       date = null;
       time = null;
+      priceInCents = null;
     });
   }
 
@@ -343,13 +370,34 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                       onTap: _timePicker,
                       onSaved: (_) {},
                     ),
+                    SizedBox(height: 15),
+                    CustomTextInputField(
+                      keyboardType: TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      hintText: "Valor da consulta",
+                      controller: _currencyController,
+                      validator: (value) {
+                        if (value == "") {
+                          return "Informe o valor da consulta";
+                        }
+                        if(_currencyController.intValue < 0) {
+                          return "Consulta não pode ser menor que zero";
+                        }
+                        return null;
+                      },
+                      onSaved: (value) => {
+                        priceInCents = _currencyController.intValue
+                      },
+                      inputFormatters: [],
+                    ),
                     SizedBox(height: 30),
                     ElevatedButton(
                       onPressed: () {
                         final isValid = _formKey.currentState!.validate();
                         if (isValid) {
                           _formKey.currentState!.save();
-                          saveAppointment(loggedUserId, date!, time!)
+                          saveAppointment(loggedUserId, date!, time!, priceInCents!)
                               .then((value) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(

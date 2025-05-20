@@ -21,6 +21,7 @@ dependencies:
   sqflite_common_ffi: ^2.3.5
   universal_io: ^2.2.2
   http: ^1.4.0
+  currency_textfield: ^4.14.1
 
 ## dev_dependencies:
 ##  flutter_test:

@@ -20,7 +20,7 @@ class DatabaseService {
 
     final database = await openDatabase(
       databasePath,
-      version: 7,
+      version: 8,
       onConfigure: (db) async => await db.execute("PRAGMA foreign_keys = ON"),
       onCreate: (db, version) async {
         await db.execute('''
@@ -67,7 +67,8 @@ class DatabaseService {
               patient_id INTEGER NOT NULL,
               date TEXT NOT NULL,
               time TEXT NOT NULL,
-              cancelled INTEGER NOT NULL
+              cancelled INTEGER NOT NULL,
+              price_in_cents INTEGER NOT NULL
             )
           ''');
       },
