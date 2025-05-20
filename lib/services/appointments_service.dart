@@ -4,15 +4,17 @@ import 'database_service.dart';
 class AppointmentsService {
   final DatabaseService _databaseService = DatabaseService.instance;
 
-  final String _appointmentsTableName = 'appointments';
-  final String _doctorIdColumnName = 'doctor_id';
-  final String _patientIdColumnName = 'patient_id';
-  final String _appointmentIdColumnName = 'id';
-  final String _appointmentDateColumnName = 'date';
-  final String _appointmentTimeColumnName = 'time';
-  final String _cancelledAppointmentColumnName = 'cancelled';
+  final _appointmentsTableName = 'appointments';
+  final _doctorIdColumnName = 'doctor_id';
+  final _patientIdColumnName = 'patient_id';
+  final _appointmentIdColumnName = 'id';
+  final _appointmentDateColumnName = 'date';
+  final _appointmentTimeColumnName = 'time';
+  final _cancelledAppointmentColumnName = 'cancelled';
+  final _appointmentPriceInCents = 'price_in_cents';
 
-  static final AppointmentsService instance = AppointmentsService._constructor();
+  static final AppointmentsService instance =
+      AppointmentsService._constructor();
   AppointmentsService._constructor();
 
   Future<void> saveAppointment(
@@ -20,6 +22,7 @@ class AppointmentsService {
     int patient_id,
     String date,
     String time,
+    int priceInCents,
   ) async {
     final db = await _databaseService.database;
 
@@ -29,7 +32,8 @@ class AppointmentsService {
         _patientIdColumnName: patient_id,
         _appointmentDateColumnName: date,
         _appointmentTimeColumnName: time,
-        _cancelledAppointmentColumnName: 0
+        _cancelledAppointmentColumnName: 0,
+        _appointmentPriceInCents: priceInCents,
       }, conflictAlgorithm: ConflictAlgorithm.abort);
     } catch (e) {
       rethrow;
@@ -42,13 +46,13 @@ class AppointmentsService {
 
     try {
       List<Map<String, Object?>> appointmentsMap = await db.rawQuery(
-          '''
+        '''
             SELECT a.id, a.date, a.time, a.cancelled, p.name as patient_name FROM $_appointmentsTableName a
               INNER JOIN patients p ON p.id = a.patient_id 
               WHERE a.doctor_id = ? AND a.cancelled = ${_notCancelled}
               ORDER BY a.date, a.time ASC;
           ''',
-        [doctorId]
+        [doctorId],
       );
 
       if (appointmentsMap.isEmpty) {
@@ -56,13 +60,13 @@ class AppointmentsService {
       }
 
       return appointmentsMap.map(
-              (appointment) => {
-                "id": appointment["id"],
-                "patient_name": appointment["patient_name"],
-                "date": appointment["date"],
-                "time": appointment["time"],
-                "cancelled": appointment["cancelled"]
-              }
+        (appointment) => {
+          "id": appointment["id"],
+          "patient_name": appointment["patient_name"],
+          "date": appointment["date"],
+          "time": appointment["time"],
+          "cancelled": appointment["cancelled"],
+        },
       );
     } catch (e) {
       rethrow;
@@ -79,7 +83,7 @@ class AppointmentsService {
 
     final result = await db.query(
       _appointmentsTableName,
-      where:'''
+      where: '''
           $_doctorIdColumnName = ? AND 
           $_appointmentDateColumnName = ? AND 
           $_appointmentTimeColumnName = ? AND 
@@ -113,15 +117,12 @@ class AppointmentsService {
 
   Future<void> cancelAppointmentById(int id) async {
     final db = await _databaseService.database;
-    
+
     await db.update(
-        _appointmentsTableName,
-        {_cancelledAppointmentColumnName: 1},
-        where: '$_appointmentIdColumnName = ?',
-        whereArgs: [id]
+      _appointmentsTableName,
+      {_cancelledAppointmentColumnName: 1},
+      where: '$_appointmentIdColumnName = ?',
+      whereArgs: [id],
     );
-
   }
-  
 }
-

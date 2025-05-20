@@ -464,14 +464,6 @@ class _PatientFormState extends State<PatientForm> {
                                     ),
                                   ),
                                 );
-                            print({
-                              "cep": cep,
-                              "rua": street,
-                              "numero": streetNumber,
-                              "complemento": complement,
-                              "cidade": city,
-                              "state": state,
-                            });
 
                             _formkey.currentState!.reset();
                             _nameController.clear();
