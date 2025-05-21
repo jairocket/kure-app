@@ -6,6 +6,7 @@ import 'package:mobile/screens/new_appointment.dart';
 import 'package:mobile/screens/doctor_form.dart';
 import 'package:mobile/screens/login_form.java.dart';
 import 'package:mobile/screens/report_screen.dart';
+import 'package:mobile/screens/updateAppointment.dart';
 import 'package:mobile/services/appointments_service.dart';
 import 'package:mobile/services/doctor_service.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +38,6 @@ class MainApp extends StatelessWidget {
         routes: {
           '/login': (context) => LoginForm(),
           '/newDoctor': (context) => DoctorForm(),
-          '/report/screen': (context) => ReportScreen()
         },
         title: "Kure App",
         theme: ThemeData(
@@ -73,6 +73,7 @@ class MyAppState extends ChangeNotifier {
       rethrow;
     }
   }
+
   void logout() {
     loggedUser = null;
     notifyListeners();
@@ -95,6 +96,11 @@ class MyAppState extends ChangeNotifier {
 
   List<Appointment> appointments = List<Appointment>.empty(growable: true);
 
+  int? appointmentIdToUpdate;
+  void setAppointmentIdToUpdate(int appointmentId){
+    appointmentIdToUpdate = appointmentId;
+    notifyListeners();
+  }
 }
 
 class MyHomePage extends StatefulWidget {
@@ -110,11 +116,11 @@ enum SelectedPage {
   newAppointment, 
   newPatient,
   doctorForm,
-  reportScreen 
+  reportScreen,
+  updateAppointment
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var selectedPage = SelectedPage.home;
   var loginPage = LoginForm();
   var patientFormPage = PatientForm();
   var appointmentFormPage = NewAppointmentsPage();
@@ -122,13 +128,10 @@ class _MyHomePageState extends State<MyHomePage> {
   var reportScreen = ReportScreen();
   var appointments = AppointmentsPage();
 
-   setSelectedPage(SelectedPage newPage) {
-    selectedPage = newPage;
-  } 
-  
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
+    var selectedPage = appState.selectedPage;
 
    // appState.loggedUser = LoggedDoctor(1, "jai", "12345");
 
@@ -147,6 +150,8 @@ class _MyHomePageState extends State<MyHomePage> {
         page = doctorForm;
       case SelectedPage.reportScreen:
         page = reportScreen;
+      case SelectedPage.updateAppointment:
+        page = UpdateAppointment(appointmentId: appState.appointmentIdToUpdate!);
     }
     if(appState.loggedUser == null){
       return LoginForm();
@@ -166,6 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: Builder(
         builder: (context) {
+          
           return Drawer(
             child: ListView(
               children: [
@@ -175,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   leading: Icon(Icons.home, color: const Color(0xFF2D72F6)),
                   onTap:
                       () => setState(() {
-                        selectedPage = SelectedPage.home;
+                        appState.setSelectedPage(SelectedPage.home);
                         Scaffold.of(context).closeDrawer();
                       }),
                 ),
@@ -184,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   leading: Icon(Icons.person_add, color: const Color(0xFF2D72F6)),
                   onTap:
                       () => setState(() {
-                        selectedPage = SelectedPage.newPatient;
+                        appState.setSelectedPage(SelectedPage.newPatient);
                         Scaffold.of(context).closeDrawer();
                       }),
                 ),
@@ -193,7 +199,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   leading: Icon(Icons.assignment_add, color: const Color(0xFF2D72F6)),
                   onTap:
                       () => setState(() {
-                        selectedPage = SelectedPage.newAppointment;
+                        appState.setSelectedPage(SelectedPage.newAppointment);
                         Scaffold.of(context).closeDrawer();
                       }),
                 ),
@@ -202,7 +208,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   leading: Icon(Icons.access_time, color: const Color(0xFF2D72F6)),
                   onTap:
                       () => setState(() {
-                        selectedPage = SelectedPage.appointments;
+                        appState.setSelectedPage(SelectedPage.appointments);
                         Scaffold.of(context).closeDrawer();
                       }),
                 ),
@@ -211,7 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   leading: Icon(Icons.report, color: const Color(0xFF2D72F6)),
                   onTap:
                     () => setState(() {
-                      selectedPage = SelectedPage.reportScreen;
+                      appState.setSelectedPage(SelectedPage.reportScreen);
                       Scaffold.of(context).closeDrawer();
                     }),
                 ),

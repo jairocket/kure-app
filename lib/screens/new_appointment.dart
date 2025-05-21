@@ -119,7 +119,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Por favor, selecione a data primeiro.'),
-          backgroundColor: Colors.orange,
+          backgroundColor: Colors.redAccent,
         ),
       );
       return;

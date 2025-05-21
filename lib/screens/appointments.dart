@@ -28,8 +28,14 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   }
 
   Widget _buildTile(Appointment appointment) {
+    var appState = context.read<MyAppState>();
+
+    
     return ListTile(
-      onTap: () => {},
+      onTap: () => {
+        appState.setAppointmentIdToUpdate(appointment.id),
+        appState.setSelectedPage(SelectedPage.updateAppointment),
+      },
       minTileHeight: 80,
       leading: Icon(
         size: 30,

@@ -125,4 +125,54 @@ class AppointmentsService {
       whereArgs: [id],
     );
   }
+
+  Future<Iterable<Map<String, Object?>>> getReport(int doctorId) async {
+    final db = await _databaseService.database;
+
+    List<Map<String, Object?>> appointmentsMap = await db.rawQuery(
+      """
+        SELECT a.cancelled, a.price_in_cents, COUNT(DISTINCT p.id) as patients FROM appointments a
+          INNER JOIN patients p ON a.patient_id = p.id 
+          WHERE p.doctor_id = $doctorId  
+      """
+    );
+
+    return appointmentsMap.map(
+          (appointment) => {
+            "cancelled": appointment["cancelled"],
+            "price_in_cents": appointment["price_in_cents"],
+            "patients": appointment["patients"]
+        },
+      );
+    }
+
+  updateAppointment(appointmentId, date, time, priceInCents) {}
+
+  Future<Map<String, Object?>?> getAppointmentById(int id) async {
+    final db = await _databaseService.database;
+
+    try {
+      List<Map<String, Object?>> appointmentsMap = await db.rawQuery(
+        '''
+            SELECT a.date, a.time, a.price_in_cents, p.name as patient_name, p.cpf as patient_cpf FROM $_appointmentsTableName a
+              INNER JOIN patients p ON p.id = a.patient_id 
+              WHERE a.id = ?
+          ''',
+        [id],
+      );
+
+      if(appointmentsMap.isEmpty) {
+        return null;
+      }
+      return {
+          "patient_name": appointmentsMap.first["patient_name"] as String,
+        "patient_cpf": appointmentsMap.first["patient_cpf"] as String,
+          "date": appointmentsMap.first["date"] as String,
+          "time": appointmentsMap.first["time"] as String,
+          "price_in_cents": appointmentsMap.first["price_in_cents"] as int,
+        };
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
