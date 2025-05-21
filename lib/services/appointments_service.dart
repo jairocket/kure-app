@@ -146,7 +146,9 @@ class AppointmentsService {
       );
     }
 
-  updateAppointment(appointmentId, date, time, priceInCents) {}
+  updateAppointment(appointmentId, date, time, priceInCents) {
+    print({appointmentId, date, time, priceInCents});
+  }
 
   Future<Map<String, Object?>?> getAppointmentById(int id) async {
     final db = await _databaseService.database;

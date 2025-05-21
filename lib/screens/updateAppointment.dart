@@ -102,7 +102,6 @@ class _UpdateAppointmentState extends State<UpdateAppointment> {
   }
 
   Future<void> _timePicker() async {
-    Provider.of<MyAppState>(context, listen: false);
 
     if (date == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -114,7 +113,7 @@ class _UpdateAppointmentState extends State<UpdateAppointment> {
       return;
     }
 
-    final appState = context.watch<MyAppState>();
+    final appState = context.read<MyAppState>();
     final doctorId = appState.loggedUser?.id;
 
     if (doctorId == null) return;
