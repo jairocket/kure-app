@@ -133,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var appState = context.watch<MyAppState>();
     var selectedPage = appState.selectedPage;
 
-  appState.loggedUser = LoggedDoctor(1, "jai", "12345");
+  //appState.loggedUser = LoggedDoctor(1, "jai", "12345");
 
     Widget page;
   
