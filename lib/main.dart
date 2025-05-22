@@ -163,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
           builder: (context) {
             return IconButton(
               onPressed: Scaffold.of(context).openDrawer,
-              icon: Icon(Icons.menu, color: const Color(0xFF2D72F6)),
+              icon: Icon(Icons.menu, color: const Color(0xFF2D72F6), size: 30),
               padding: EdgeInsets.symmetric(horizontal: 30),
             );
           },

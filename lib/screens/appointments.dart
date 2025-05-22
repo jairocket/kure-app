@@ -30,7 +30,6 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   Widget _buildTile(Appointment appointment) {
     var appState = context.read<MyAppState>();
 
-    
     return ListTile(
       onTap: () => {
         appState.setAppointmentIdToUpdate(appointment.id),
@@ -114,7 +113,14 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     return Column(
       children: [
         CustomTitle(title: "Consultas Marcadas"),
-        SizedBox(height: 15),
+        SizedBox(
+          height: 50,
+          child: Text(
+           '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
+            textAlign: TextAlign.start,
+            style: TextStyle(fontSize: 16),
+          )
+        ),
         Expanded(
           child: Container(
             alignment: Alignment.centerRight,

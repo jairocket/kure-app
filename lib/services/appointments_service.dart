@@ -1,3 +1,4 @@
+
 import 'package:sqflite/sqflite.dart';
 import 'database_service.dart';
 
@@ -43,21 +44,27 @@ class AppointmentsService {
   Future<Iterable<Map<String, Object?>>> getAppointments(int doctorId) async {
     final db = await _databaseService.database;
     final _notCancelled = 0;
+    final now = DateTime.now().toIso8601String().split("T").first;
+    print(now);
 
     try {
       List<Map<String, Object?>> appointmentsMap = await db.rawQuery(
-        '''
+        ''' 
             SELECT a.id, a.date, a.time, a.cancelled, p.name as patient_name FROM $_appointmentsTableName a
               INNER JOIN patients p ON p.id = a.patient_id 
-              WHERE a.doctor_id = ? AND a.cancelled = ${_notCancelled}
+              WHERE a.doctor_id = ? AND a.cancelled = $_notCancelled 
               ORDER BY a.date, a.time ASC;
           ''',
         [doctorId],
       );
 
+      print(appointmentsMap.first["date"]);
+
+
       if (appointmentsMap.isEmpty) {
         return List<Map<String, Object>>.empty(growable: true);
       }
+
 
       return appointmentsMap.map(
         (appointment) => {
@@ -146,8 +153,15 @@ class AppointmentsService {
       );
     }
 
-  updateAppointment(appointmentId, date, time, priceInCents) {
-    print({appointmentId, date, time, priceInCents});
+  Future<void> updateAppointment(appointmentId, date, time, priceInCents) async {
+    final db = await _databaseService.database;
+
+    await db.update(
+        _appointmentsTableName,
+        {"date": date, "time": time, "price_in_cents": priceInCents},
+        where: '$_appointmentIdColumnName = ?',
+        whereArgs: [appointmentId]
+    );
   }
 
   Future<Map<String, Object?>?> getAppointmentById(int id) async {
@@ -167,11 +181,11 @@ class AppointmentsService {
         return null;
       }
       return {
-          "patient_name": appointmentsMap.first["patient_name"] as String,
+        "patient_name": appointmentsMap.first["patient_name"] as String,
         "patient_cpf": appointmentsMap.first["patient_cpf"] as String,
-          "date": appointmentsMap.first["date"] as String,
-          "time": appointmentsMap.first["time"] as String,
-          "price_in_cents": appointmentsMap.first["price_in_cents"] as int,
+        "date": appointmentsMap.first["date"] as String,
+        "time": appointmentsMap.first["time"] as String,
+        "price_in_cents": appointmentsMap.first["price_in_cents"] as int,
         };
     } catch (e) {
       rethrow;
