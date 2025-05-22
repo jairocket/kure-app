@@ -106,7 +106,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
 
     if (appointmentDate != null) {
       setState(() {
-        date = DateFormat.yMd("pt_BR").format(appointmentDate);
+        date = appointmentDate.toIso8601String().split("T").first;
         _appointmentDateController.text = DateFormat.yMd(
           "pt_BR",
         ).format(appointmentDate);
