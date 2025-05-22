@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var patientFormPage = PatientForm();
   var appointmentFormPage = NewAppointmentsPage();
   var doctorForm = DoctorForm();
-  var reportScreen = ReportScreen();
+  var reportScreen = RelatorioScreen();
   var appointments = AppointmentsPage();
 
   @override
@@ -133,13 +133,13 @@ class _MyHomePageState extends State<MyHomePage> {
     var appState = context.watch<MyAppState>();
     var selectedPage = appState.selectedPage;
 
-   // appState.loggedUser = LoggedDoctor(1, "jai", "12345");
+  appState.loggedUser = LoggedDoctor(1, "jai", "12345");
 
     Widget page;
   
     switch (selectedPage) {
       case SelectedPage.home:
-        page = appState.loggedUser != null ? ReportScreen()  : LoginForm() ;
+        page = appState.loggedUser != null ? RelatorioScreen()  : LoginForm() ;
       case SelectedPage.appointments:
         page = appointments;
       case SelectedPage.newAppointment:
