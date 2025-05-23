@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:mobile/components/custom_time_picker_window.dart';
 import 'package:mobile/components/custom_title.dart';
 import 'package:mobile/components/custom_text_input_field.dart';
 import 'package:mobile/components/custom_time_picker.dart';
@@ -27,21 +28,24 @@ class NewAppointmentsPage extends StatefulWidget {
   State<StatefulWidget> createState() => _NewAppointmentsPageState();
 }
 
-final _patientNameController = TextEditingController();
-final _cpfController = TextEditingController();
-final _appointmentDateController = TextEditingController();
-final _appointmentTimeController = TextEditingController();
-final _currencyController = CurrencyTextFieldController(
-  currencySymbol: "R\$",
-  decimalSymbol: ",",
-  thousandSymbol: ".",
-);
-
-String? name, cpf, date, time;
+DateTime? appointmentDate;
+TimeOfDay? appointmentTime;
+String? name, cpf;
 int? patients_id, doctors_id, priceInCents;
 
 class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool isClearing = false;
+
+  final _patientNameController = TextEditingController();
+  final _cpfController = TextEditingController();
+  final _appointmentDateController = TextEditingController();
+  final _appointmentTimeController = TextEditingController();
+  final _currencyController = CurrencyTextFieldController(
+    currencySymbol: "R\$",
+    decimalSymbol: ",",
+    thousandSymbol: ".",
+  );
 
   Future<void> saveAppointment(loggedUserId, date, time, priceInCents) async {
     if (loggedUserId == null) {
@@ -58,7 +62,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
       patients_id!,
       date,
       time,
-      priceInCents
+      priceInCents,
     );
   }
 
@@ -94,156 +98,39 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
     }
   }
 
+  String formatDate(DateTime date) {
+    return DateFormat('dd/MM/yyyy', 'pt_BR').format(date);
+  }
+
+  String formatTime(TimeOfDay time) {
+    final hour = time.hour.toString().padLeft(2, '0');
+    final minute = time.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
+  }
+
   Future<void> _datePicker() async {
-    DateTime? appointmentDate = await showDatePicker(
+    await initializeDateFormatting('pt_BR', null);
+
+    DateTime? selectedDate = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime.now(),
       lastDate: DateTime(2100),
     );
 
-    initializeDateFormatting("pt_BR", null);
-
-    if (appointmentDate != null) {
+    if (selectedDate != null) {
       setState(() {
-        date = appointmentDate.toIso8601String().split("T").first;
+        appointmentDate = selectedDate;
         _appointmentDateController.text = DateFormat.yMd(
           "pt_BR",
-        ).format(appointmentDate);
+        ).format(selectedDate);
       });
     }
   }
 
-  Future<void> _timePicker() async {
-    if (date == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Por favor, selecione a data primeiro.'),
-          backgroundColor: Colors.redAccent,
-        ),
-      );
-      return;
-    }
-
-    final appState = context.read<MyAppState>();
-    final doctorId = appState.loggedUser?.id;
-
-    if (doctorId == null) return;
-
-    final List<TimeOfDay> availableTimes = List.generate(
-      20,
-      (index) => TimeOfDay(hour: 8 + (index ~/ 2), minute: (index % 2) * 30),
-    );
-
-    final AppointmentsService service = AppointmentsService.instance;
-    List<String> unavailableTimes = await service.getUnavailableTimes(
-      date!,
-      doctorId,
-    );
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-      ),
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: MediaQuery.of(context).size.height * 0.95,
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Selecione um horário',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-              ),
-              Divider(),
-              Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                    childAspectRatio: 2.5,
-                  ),
-                  itemCount: availableTimes.length,
-                  itemBuilder: (context, index) {
-                    final timeSlot = availableTimes[index];
-                    final timeSlotText =
-                        "${timeSlot.hour.toString().padLeft(2, '0')}:${timeSlot.minute.toString().padLeft(2, '0')}";
-                    final isUnavailable = unavailableTimes.contains(
-                      timeSlotText,
-                    );
-
-                    return Tooltip(
-                      message: isUnavailable ? "Horário indisponível" : "",
-                      child: ElevatedButton.icon(
-                        onPressed:
-                            isUnavailable
-                                ? null
-                                : () {
-                                  setState(() {
-                                    time = timeSlotText;
-                                    _appointmentTimeController.text =
-                                        timeSlotText;
-                                  });
-                                  _formKey.currentState?.validate();
-                                  Navigator.pop(context);
-                                },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              isUnavailable
-                                  ? Colors.grey[300]
-                                  : const Color(0xFF2D72F6),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        icon:
-                            isUnavailable
-                                ? const Icon(
-                                  Icons.block,
-                                  color: Colors.black38,
-                                  size: 16,
-                                )
-                                : const SizedBox.shrink(),
-                        label: Text(
-                          timeSlotText,
-                          style: TextStyle(
-                            color:
-                                isUnavailable ? Colors.black38 : Colors.white,
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              SizedBox(height: 20),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   void _cleanInputData() {
+    isClearing = true;
+
     _formKey.currentState?.reset();
     _cpfController.clear();
     _patientNameController.clear();
@@ -255,9 +142,13 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
       patients_id = null;
       name = null;
       cpf = null;
-      date = null;
-      time = null;
+      appointmentDate = null;
+      appointmentTime = null;
       priceInCents = null;
+    });
+
+    Future.delayed(Duration(milliseconds: 100), () {
+      isClearing = false;
     });
   }
 
@@ -327,6 +218,7 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                       },
                       inputFormatters: [_cpfFormatter],
                       onChanged: (value) {
+                        if (isClearing) return;
                         final cleanCpf = value.replaceAll(RegExp(r'\D'), '');
 
                         if (cleanCpf.length == 11) {
@@ -367,7 +259,34 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                         }
                         return null;
                       },
-                      onTap: _timePicker,
+                      onTap: () {
+                        if (appointmentDate == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Por favor, selecione a data primeiro.',
+                              ),
+                              backgroundColor: Colors.redAccent,
+                            ),
+                          );
+                          return;
+                        }
+
+                        CustomTimePickerWindow.show(
+                          context: context,
+                          date: formatDate(appointmentDate!),
+                          onTimeSelected: (selectedTime) {
+                            setState(() {
+                              appointmentTime = TimeOfDay(
+                                hour: int.parse(selectedTime.split(':')[0]),
+                                minute: int.parse(selectedTime.split(':')[1]),
+                              );
+                              _appointmentTimeController.text = selectedTime;
+                            });
+                            _formKey.currentState?.validate();
+                          },
+                        );
+                      },
                       onSaved: (_) {},
                     ),
                     SizedBox(height: 15),
@@ -381,14 +300,15 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                         if (value == "") {
                           return "Informe o valor da consulta";
                         }
-                        if(_currencyController.intValue < 0) {
+                        if (_currencyController.intValue < 0) {
                           return "Consulta não pode ser menor que zero";
                         }
                         return null;
                       },
-                      onSaved: (value) => {
-                        priceInCents = _currencyController.intValue
-                      },
+                      onSaved:
+                          (value) => {
+                            priceInCents = _currencyController.intValue,
+                          },
                       inputFormatters: [],
                     ),
                     SizedBox(height: 30),
@@ -397,7 +317,12 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                         final isValid = _formKey.currentState!.validate();
                         if (isValid) {
                           _formKey.currentState!.save();
-                          saveAppointment(loggedUserId, date!, time!, priceInCents!)
+                          saveAppointment(
+                                loggedUserId,
+                                formatDate(appointmentDate!),
+                                formatTime(appointmentTime!),
+                                priceInCents!,
+                              )
                               .then((value) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
