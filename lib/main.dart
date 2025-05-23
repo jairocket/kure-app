@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile/models/appointmentData.dart';
 import 'package:mobile/models/doctor.dart';
 import 'package:mobile/screens/appointments.dart';
 import 'package:mobile/screens/new_appointment.dart';
@@ -66,7 +67,7 @@ class MyAppState extends ChangeNotifier {
 
       if(doctor["id"] != null){
         loggedUser = LoggedDoctor(doctor["id"] as int, doctor["name"] as String, doctor["crm"] as String);
-        selectedPage = SelectedPage.reportScreen;
+        selectedPage = SelectedPage.home;
         notifyListeners();
       }
     } catch(e) {
@@ -79,9 +80,37 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<AppointmentData> appointmentDataList = List.empty(growable: true);
+
+    Future<void> setAppointmentDataList(int loggedUserId) async {
+    final AppointmentsService appointmentsService =
+        AppointmentsService.instance;
+
+    var appointmentsMap = await appointmentsService.getAllAppointments(
+      loggedUserId,
+    );
+
+   appointmentDataList = appointmentsMap.map((appointment) {
+      int price_in_cents = appointment["price_in_cents"] as int;
+      double price = price_in_cents / 100;
+
+      int cancelledInt = appointment["cancelled"] as int;
+      bool cancelled = (cancelledInt == 1);
+
+      return AppointmentData(
+        appointment["date"] as String,
+        cancelled,
+        price,
+      );
+    }).toList();
+
+    notifyListeners();
+  }
+
+
   Future<void> setAppointmentsMapByDoctorId(int doctorId) async {
     final AppointmentsService appointmentsService = AppointmentsService.instance;
-     var appointmentsMap = await appointmentsService.getAppointments(doctorId);
+     var appointmentsMap = await appointmentsService.getTodayNotCancelledAppointments(doctorId);
        appointments = appointmentsMap.map(
               (appointment) => Appointment(
               appointment["id"] as int,
@@ -93,6 +122,7 @@ class MyAppState extends ChangeNotifier {
       ).toList();
        notifyListeners();
   }
+
 
   List<Appointment> appointments = List<Appointment>.empty(growable: true);
 
@@ -112,8 +142,7 @@ class MyHomePage extends StatefulWidget {
 
 enum SelectedPage { 
   home, 
-  appointments, 
-  newAppointment, 
+  newAppointment,
   newPatient,
   doctorForm,
   reportScreen,
@@ -125,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
   var patientFormPage = PatientForm();
   var appointmentFormPage = NewAppointmentsPage();
   var doctorForm = DoctorForm();
-  var reportScreen = RelatorioScreen();
+  var reportScreen = ReportScreen();
   var appointments = AppointmentsPage();
 
   @override
@@ -139,9 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
   
     switch (selectedPage) {
       case SelectedPage.home:
-        page = appState.loggedUser != null ? RelatorioScreen()  : LoginForm() ;
-      case SelectedPage.appointments:
-        page = appointments;
+        page = appState.loggedUser != null ? appointments  : LoginForm() ;
       case SelectedPage.newAppointment:
         page = appointmentFormPage;
       case SelectedPage.newPatient:
@@ -163,15 +190,13 @@ class _MyHomePageState extends State<MyHomePage> {
           builder: (context) {
             return IconButton(
               onPressed: Scaffold.of(context).openDrawer,
-              icon: Icon(Icons.menu, color: const Color(0xFF2D72F6), size: 30),
-              padding: EdgeInsets.symmetric(horizontal: 30),
+              icon: Icon(Icons.menu, color: const Color(0xFF2D72F6), size: 40),
             );
           },
         ),
       ),
       drawer: Builder(
         builder: (context) {
-          
           return Drawer(
             child: ListView(
               children: [
@@ -200,15 +225,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   onTap:
                       () => setState(() {
                         appState.setSelectedPage(SelectedPage.newAppointment);
-                        Scaffold.of(context).closeDrawer();
-                      }),
-                ),
-                ListTile(
-                  title: Text("Consultas"),
-                  leading: Icon(Icons.access_time, color: const Color(0xFF2D72F6)),
-                  onTap:
-                      () => setState(() {
-                        appState.setSelectedPage(SelectedPage.appointments);
                         Scaffold.of(context).closeDrawer();
                       }),
                 ),

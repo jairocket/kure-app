@@ -1,4 +1,3 @@
-
 import 'package:sqflite/sqflite.dart';
 import 'database_service.dart';
 
@@ -41,30 +40,26 @@ class AppointmentsService {
     }
   }
 
-  Future<Iterable<Map<String, Object?>>> getAppointments(int doctorId) async {
+  Future<Iterable<Map<String, Object?>>> getTodayNotCancelledAppointments(
+    int doctorId,
+  ) async {
     final db = await _databaseService.database;
     final _notCancelled = 0;
-    final now = DateTime.now().toIso8601String().split("T").first;
-    print(now);
 
     try {
       List<Map<String, Object?>> appointmentsMap = await db.rawQuery(
         ''' 
             SELECT a.id, a.date, a.time, a.cancelled, p.name as patient_name FROM $_appointmentsTableName a
               INNER JOIN patients p ON p.id = a.patient_id 
-              WHERE a.doctor_id = ? AND a.cancelled = $_notCancelled 
+              WHERE a.doctor_id = ? AND a.cancelled = ? AND DATE(a.date) >= DATE('now')
               ORDER BY a.date, a.time ASC;
           ''',
-        [doctorId],
+        [doctorId, _notCancelled],
       );
-
-      print(appointmentsMap.first["date"]);
-
 
       if (appointmentsMap.isEmpty) {
         return List<Map<String, Object>>.empty(growable: true);
       }
-
 
       return appointmentsMap.map(
         (appointment) => {
@@ -133,34 +128,41 @@ class AppointmentsService {
     );
   }
 
-  Future<Iterable<Map<String, Object?>>> getReport(int doctorId) async {
+  Future<Iterable<Map<String, Object?>>> getAllAppointments(
+    int doctorId,
+  ) async {
     final db = await _databaseService.database;
 
     List<Map<String, Object?>> appointmentsMap = await db.rawQuery(
       """
-        SELECT a.cancelled, a.price_in_cents, COUNT(DISTINCT p.id) as patients FROM appointments a
-          INNER JOIN patients p ON a.patient_id = p.id 
-          WHERE p.doctor_id = $doctorId  
-      """
+        SELECT a.date, a.cancelled, a.price_in_cents FROM appointments a
+          WHERE a.doctor_id = ?
+      """,
+      [doctorId],
     );
 
     return appointmentsMap.map(
-          (appointment) => {
-            "cancelled": appointment["cancelled"],
-            "price_in_cents": appointment["price_in_cents"],
-            "patients": appointment["patients"]
-        },
-      );
-    }
+      (appointment) => {
+        "cancelled": appointment["cancelled"],
+        "price_in_cents": appointment["price_in_cents"],
+        "date": appointment["date"],
+      },
+    );
+  }
 
-  Future<void> updateAppointment(appointmentId, date, time, priceInCents) async {
+  Future<void> updateAppointment(
+    appointmentId,
+    date,
+    time,
+    priceInCents,
+  ) async {
     final db = await _databaseService.database;
 
     await db.update(
-        _appointmentsTableName,
-        {"date": date, "time": time, "price_in_cents": priceInCents},
-        where: '$_appointmentIdColumnName = ?',
-        whereArgs: [appointmentId]
+      _appointmentsTableName,
+      {"date": date, "time": time, "price_in_cents": priceInCents},
+      where: '$_appointmentIdColumnName = ?',
+      whereArgs: [appointmentId],
     );
   }
 
@@ -177,7 +179,7 @@ class AppointmentsService {
         [id],
       );
 
-      if(appointmentsMap.isEmpty) {
+      if (appointmentsMap.isEmpty) {
         return null;
       }
       return {
@@ -186,7 +188,7 @@ class AppointmentsService {
         "date": appointmentsMap.first["date"] as String,
         "time": appointmentsMap.first["time"] as String,
         "price_in_cents": appointmentsMap.first["price_in_cents"] as int,
-        };
+      };
     } catch (e) {
       rethrow;
     }
