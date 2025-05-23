@@ -17,8 +17,9 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
   void initState() {
     super.initState();
     var appState = context.read<MyAppState>();
+    
     if (appState.loggedUser != null) {
-      appState.setAppointmentsMapByDoctorId(appState.loggedUser!.id);
+      appState.setAppointmentsMapByDoctorId(appState.loggedUser!.id).then((_){});
     }
   }
 
@@ -31,6 +32,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
     var appState = context.read<MyAppState>();
 
     return ListTile(
+      hoverColor: Colors.grey,
       onTap: () => {
         appState.setAppointmentIdToUpdate(appointment.id),
         appState.setSelectedPage(SelectedPage.updateAppointment),
