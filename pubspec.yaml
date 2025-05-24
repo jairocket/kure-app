@@ -1,5 +1,5 @@
 name: mobile
-description: "A new Flutter project."
+description: "App for Managing medical appointments"
 publish_to: 'none'
 version: 0.1.0
 
@@ -36,6 +36,6 @@ flutter:
 
 intl: any
 provider: ^5.0.0
-dev_dependencies:
+
 
 
