@@ -38,10 +38,12 @@ class _ReportScreenState extends State<ReportScreen> {
             (appointmentData) => appointmentData.cancelled == true).toList();
 
     List<double> billedPriceMap = billedAppointments.map((bill) => bill.price).toList();
-    double totalBilledRevenue = billedAppointments.isEmpty ? 0.00 : billedPriceMap.reduce((value, price) => value + price);
+    double totalBilledRevenue = billedAppointments
+        .isEmpty ? 0.00 : billedPriceMap.reduce((value, price) => value + price);
 
     List<double> scheduledPriceMap = scheduledAppointments.map((bill)=> bill.price).toList();
-    double totalScheduledRevenue = scheduledAppointments.isEmpty ? 0.00 : scheduledPriceMap.reduce((value, price) => value + price);
+    double totalScheduledRevenue = scheduledAppointments
+        .isEmpty ? 0.00 : scheduledPriceMap.reduce((value, price) => value + price);
 
     return Scaffold(
       backgroundColor: Color(0xFFF7F7F7),
@@ -81,7 +83,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 children: [
                   DashboardCard(
                     value: billedAppointments.length,
-                    label: "Consultas Marcadas",
+                    label: "Consultas Faturadas",
                     icon: Icons.calendar_month,
                     color: Colors.blue,
                   ),
