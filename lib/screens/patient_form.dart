@@ -97,10 +97,10 @@ class _PatientFormState extends State<PatientForm> {
       final address = await CepService.getAddressByCep(cep);
     if (address != null) {
       setState(() {
-        _streetController.text = address['logradouro'] ?? '';
-        _neighborhoodController.text = address['bairro'] ?? '';
-        _cityController.text = address['localidade'] ?? '';
-        _stateController.text = address['uf'] ?? '';
+        _streetController.text = address['logradouro'] as String;
+        _neighborhoodController.text = address['bairro'] as String;
+        _cityController.text = address['localidade'] as String;
+        _stateController.text = address['uf'] as String;
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
