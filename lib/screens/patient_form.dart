@@ -253,7 +253,9 @@ class _PatientFormState extends State<PatientForm> {
                                 if(value.length == 9) {
                                   getAddress();
                                 }
+
                               },
+                              onSuffixTap: () => getAddress(),
                               onSaved:
                                   (value) => setState(() {
                                     if (value != null) {
