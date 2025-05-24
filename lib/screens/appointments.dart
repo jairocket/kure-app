@@ -86,7 +86,8 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
             IconButton(
               iconSize: 30,
               onPressed: () async => {
-                await cancelAppointmentById(appointment.id)
+                await cancelAppointmentById(appointment.id),
+                await appState.setAppointmentsMapByDoctorId(appState.loggedUser!.id)
               },
               icon: const Icon(
                 Icons.delete_outline_rounded,
