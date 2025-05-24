@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:sqflite/sqflite.dart';
 
 import 'database_service.dart';
@@ -66,11 +64,6 @@ class DoctorService {
     } catch (e) {
       rethrow;
     }
-  }
-
-  String _hashPassword(String password) {
-    List<int> passwordBytes = utf8.encode(password);
-    return base64Encode(passwordBytes);
   }
 
       Future<void> changePasswordByEmail(String email, String newPassword) async {
