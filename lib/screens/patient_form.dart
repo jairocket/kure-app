@@ -180,7 +180,7 @@ class _PatientFormState extends State<PatientForm> {
                       Row(
                         children: [
                           Expanded(
-                            flex: 6,
+                            flex: 5,
                             child: CustomTextInputField(
                               hintText: "CPF",
                               controller: _cpfController,
