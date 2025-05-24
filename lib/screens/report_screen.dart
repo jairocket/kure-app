@@ -26,9 +26,6 @@ class _ReportScreenState extends State<ReportScreen> {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
 
-    if(appState.appointmentDataList == null ) {
-      return CircularProgressIndicator();
-    }
     List<AppointmentData> billedAppointments = appState.appointmentDataList.where(
             (appointmentData) => (appointmentData.cancelled == false) &&
             (DateTime.parse(appointmentData.date).isBefore(DateTime.now()))).toList();
@@ -41,10 +38,12 @@ class _ReportScreenState extends State<ReportScreen> {
             (appointmentData) => appointmentData.cancelled == true).toList();
 
     List<double> billedPriceMap = billedAppointments.map((bill) => bill.price).toList();
-    double totalBilledRevenue = billedPriceMap.reduce((value, price) => value + price);
+    double totalBilledRevenue = billedAppointments
+        .isEmpty ? 0.00 : billedPriceMap.reduce((value, price) => value + price);
 
     List<double> scheduledPriceMap = scheduledAppointments.map((bill)=> bill.price).toList();
-    double totalScheduledRevenue = scheduledPriceMap.reduce((value, price) => value + price);
+    double totalScheduledRevenue = scheduledAppointments
+        .isEmpty ? 0.00 : scheduledPriceMap.reduce((value, price) => value + price);
 
     return Scaffold(
       backgroundColor: Color(0xFFF7F7F7),
@@ -84,7 +83,7 @@ class _ReportScreenState extends State<ReportScreen> {
                 children: [
                   DashboardCard(
                     value: billedAppointments.length,
-                    label: "Consultas Marcadas",
+                    label: "Consultas Faturadas",
                     icon: Icons.calendar_month,
                     color: Colors.blue,
                   ),
