@@ -135,7 +135,7 @@ class AppointmentsService {
 
     List<Map<String, Object?>> appointmentsMap = await db.rawQuery(
       """
-        SELECT a.id, a.date, a.cancelled, a.price_in_cents, p.name as patient_name FROM appointments a
+        SELECT a.id, a.time, a.date, a.cancelled, a.price_in_cents, p.name as patient_name, p.cpf as cpf FROM appointments a
           INNER JOIN patients p ON p.id = a.patient_id
           WHERE a.doctor_id = ?
       """,
@@ -148,7 +148,9 @@ class AppointmentsService {
         "cancelled": appointment["cancelled"],
         "price_in_cents": appointment["price_in_cents"],
         "date": appointment["date"],
-        "patient_name": appointment["patient_name"]
+        "patient_name": appointment["patient_name"],
+        "cpf": appointment["cpf"],
+        "time": appointment["time"]
       },
     );
   }

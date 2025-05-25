@@ -271,7 +271,6 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                           );
                           return;
                         }
-
                         CustomTimePickerModal.show(
                           context: context,
                           date: formatDate(appointmentDate!),

@@ -4,12 +4,6 @@ import 'package:kure/components/custom_title.dart';
 import 'package:kure/extensions/extensions.dart';
 import 'package:kure/services/doctor_service.dart';
 
-String? email, password;
-
-final TextEditingController emailController = TextEditingController();
-final TextEditingController newPasswordController = TextEditingController();
-final TextEditingController confirmPasswordController = TextEditingController();
-
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
 
@@ -18,6 +12,12 @@ class ChangePasswordPage extends StatefulWidget {
 }
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
+  String? email, password;
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
   final _formKey = GlobalKey<FormState>();
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;

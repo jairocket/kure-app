@@ -12,19 +12,6 @@ import '../components/custom_text_input_field.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
-final TextEditingController _nameController = TextEditingController();
-final TextEditingController _cpfController = TextEditingController();
-final TextEditingController _phoneController = TextEditingController();
-final TextEditingController _birthdayController = TextEditingController();
-final TextEditingController _genderController = TextEditingController();
-final TextEditingController _cepController = TextEditingController();
-final TextEditingController _streetController = TextEditingController();
-final TextEditingController _streetNumberController = TextEditingController();
-final TextEditingController _complementController = TextEditingController();
-final TextEditingController _neighborhoodController = TextEditingController();
-final TextEditingController _cityController = TextEditingController();
-final TextEditingController _stateController = TextEditingController();
-
 final _cpfFormatter = MaskTextInputFormatter(
   mask: '###.###.###-##',
   filter: {"#": RegExp(r'[0-9]')},
@@ -48,6 +35,19 @@ class PatientForm extends StatefulWidget {
 }
 
 class _PatientFormState extends State<PatientForm> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _cpfController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _birthdayController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
+  final TextEditingController _cepController = TextEditingController();
+  final TextEditingController _streetController = TextEditingController();
+  final TextEditingController _streetNumberController = TextEditingController();
+  final TextEditingController _complementController = TextEditingController();
+  final TextEditingController _neighborhoodController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _stateController = TextEditingController();
+
   GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   String? name, cpf, phoneNumber, gender, birthday;
   String? cep,
@@ -474,11 +474,13 @@ class _PatientFormState extends State<PatientForm> {
                             _birthdayController.clear();
                             _genderController.clear();
                             _stateController.clear();
+                            _stateController.text = "";
                             _streetNumberController.clear();
                             _complementController.clear();
                             _cepController.clear();
                             _cityController.clear();
-                            _stateController.clear();
+                            _streetController.clear();
+                            _streetController.text = "";
 
                             setState(() {
                               name = null;

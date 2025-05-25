@@ -341,7 +341,14 @@ class _UpdateAppointmentState extends State<UpdateAppointment> {
                   },
                   inputFormatters: [],
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 20),
+                TextButton(
+                  onPressed: () {
+                    _cleanInputData;
+                  },
+                  child: const Text("Limpar campos", style: TextStyle(color:  const Color(0xFF2D72F6), fontSize: 16)),
+                ),
+                SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
                     final isValid = _formKey.currentState!.validate();
@@ -386,33 +393,6 @@ class _UpdateAppointmentState extends State<UpdateAppointment> {
                   ),
                 ),
 
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    onPressed: _cleanInputData,
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 70,
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40),
-                        side: BorderSide(
-                          color: const Color(0xFF2D72F6),
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                    child: Text(
-                      "Limpar campos",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: const Color(0xFF2D72F6),
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

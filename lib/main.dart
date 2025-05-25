@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:kure/screens/appointmentsList.dart';
+import 'package:kure/screens/search_appointments.dart';
 import 'package:kure/screens/updateAppointment.dart';
 import 'package:kure/models/appointmentData.dart';
 import 'package:kure/models/doctor.dart';
-import 'package:kure/screens/appointments.dart';
+import 'package:kure/screens/appointments_of_today.dart';
 import 'package:kure/screens/new_appointment.dart';
 import 'package:kure/screens/doctor_form.dart';
 import 'package:kure/screens/login_form.java.dart';
@@ -101,7 +102,9 @@ class MyAppState extends ChangeNotifier {
         appointment["date"] as String,
         cancelled,
         price,
-        appointment["patient_name"] as String
+        appointment["time"] as String,
+        appointment["patient_name"] as String,
+        appointment["cpf"] as String
       );
     }).toList();
 
@@ -152,7 +155,6 @@ class MyAppState extends ChangeNotifier {
     return appointmentDataList.where(
             (appointmentData) => appointmentData.cancelled == true).toList();
   }
-
 }
 
 class MyHomePage extends StatefulWidget {
@@ -171,7 +173,8 @@ enum SelectedPage {
   updateAppointment,
   cancelledAppointments,
   scheduledAppointments,
-  billedAppointments
+  billedAppointments,
+  appointments
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -180,7 +183,8 @@ class _MyHomePageState extends State<MyHomePage> {
   var appointmentFormPage = NewAppointmentsPage();
   var doctorForm = DoctorForm();
   var reportScreen = ReportScreen();
-  var appointments = AppointmentsPage();
+  var home = AppointmentsPage();
+
 
   @override
   Widget build(BuildContext context) {
@@ -193,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
   
     switch (selectedPage) {
       case SelectedPage.home:
-        page = appState.loggedUser != null ? appointments  : LoginForm() ;
+        page = appState.loggedUser != null ? home  : LoginForm() ;
       case SelectedPage.newAppointment:
         page = appointmentFormPage;
       case SelectedPage.newPatient:
@@ -210,6 +214,8 @@ class _MyHomePageState extends State<MyHomePage> {
         page = AppointmentListPage(appointments: appState.getScheduledAppointments(), title: "Consultas Agendadas");
       case SelectedPage.cancelledAppointments:
         page = AppointmentListPage(appointments: appState.getCancelledAppointments(), title: "Consultas Canceladas");
+      case SelectedPage.appointments:
+        page = SearchAppointments();
 
     }
     if(appState.loggedUser == null){
@@ -266,6 +272,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   onTap:
                     () => setState(() {
                       appState.setSelectedPage(SelectedPage.reportScreen);
+                      Scaffold.of(context).closeDrawer();
+                    }),
+                ),
+                                ListTile(
+                  title: Text("Consultas"),
+                  leading: Icon(Icons.search, color: const Color(0xFF2D72F6)),
+                  onTap:
+                    () => setState(() {
+                      appState.setSelectedPage(SelectedPage.appointments);
                       Scaffold.of(context).closeDrawer();
                     }),
                 ),
