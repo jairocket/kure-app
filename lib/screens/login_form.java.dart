@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/custom_text_input_field.dart';
-import 'package:mobile/screens/forget_password.dart';
-import 'package:mobile/screens/doctor_form.dart';
-import 'package:mobile/extensions/extensions.dart';
+import 'package:kure/extensions/extensions.dart';
+import 'package:kure/components/custom_text_input_field.dart';
+import 'package:kure/screens/forget_password.dart';
+import 'package:kure/screens/doctor_form.dart';
 import 'package:provider/provider.dart';
 
 import '../main.dart';

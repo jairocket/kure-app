@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/custom_text_input_field.dart';
-import 'package:mobile/components/custom_title.dart';
-import 'package:mobile/extensions/extensions.dart';
-import 'package:mobile/services/doctor_service.dart';
+import 'package:kure/components/custom_text_input_field.dart';
+import 'package:kure/components/custom_title.dart';
+import 'package:kure/extensions/extensions.dart';
+import 'package:kure/services/doctor_service.dart';
 
 String? email, password;
 

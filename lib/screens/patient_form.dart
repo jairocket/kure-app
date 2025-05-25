@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:mobile/components/custom_title.dart';
-import 'package:mobile/components/custom_gender_options.dart';
-import 'package:mobile/components/date_input.dart';
-import 'package:mobile/extensions/extensions.dart';
-import 'package:mobile/services/cep_service.dart';
-import 'package:mobile/services/patient_service.dart';
+import 'package:kure/components/custom_title.dart';
+import 'package:kure/components/custom_gender_options.dart';
+import 'package:kure/components/date_input.dart';
+import 'package:kure/extensions/extensions.dart';
+import 'package:kure/services/cep_service.dart';
+import 'package:kure/services/patient_service.dart';
 import '../components/custom_text_input_field.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';

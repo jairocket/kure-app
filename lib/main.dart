@@ -1,17 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/models/appointmentData.dart';
-import 'package:mobile/models/doctor.dart';
-import 'package:mobile/screens/appointments.dart';
-import 'package:mobile/screens/new_appointment.dart';
-import 'package:mobile/screens/doctor_form.dart';
-import 'package:mobile/screens/login_form.java.dart';
-import 'package:mobile/screens/report_screen.dart';
-import 'package:mobile/screens/updateAppointment.dart';
-import 'package:mobile/services/appointments_service.dart';
-import 'package:mobile/services/doctor_service.dart';
+import 'package:kure/screens/appointmentsList.dart';
+import 'package:kure/screens/updateAppointment.dart';
+import 'package:kure/models/appointmentData.dart';
+import 'package:kure/models/doctor.dart';
+import 'package:kure/screens/appointments.dart';
+import 'package:kure/screens/new_appointment.dart';
+import 'package:kure/screens/doctor_form.dart';
+import 'package:kure/screens/login_form.java.dart';
+import 'package:kure/screens/report_screen.dart';
+import 'package:kure/services/appointments_service.dart';
+import 'package:kure/services/doctor_service.dart';
 import 'package:provider/provider.dart';
-import 'package:mobile/screens/patient_form.dart';
+import 'package:kure/screens/patient_form.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:universal_io/io.dart';
 
@@ -74,15 +75,13 @@ class MyAppState extends ChangeNotifier {
       rethrow;
     }
   }
-
   void logout() {
     loggedUser = null;
     notifyListeners();
   }
 
   List<AppointmentData> appointmentDataList = List.empty(growable: true);
-
-    Future<void> setAppointmentDataList(int loggedUserId) async {
+  Future<void> setAppointmentDataList(int loggedUserId) async {
     final AppointmentsService appointmentsService =
         AppointmentsService.instance;
 
@@ -98,15 +97,16 @@ class MyAppState extends ChangeNotifier {
       bool cancelled = (cancelledInt == 1);
 
       return AppointmentData(
+        appointment["id"] as int,
         appointment["date"] as String,
         cancelled,
         price,
+        appointment["patient_name"] as String
       );
     }).toList();
 
     notifyListeners();
   }
-
 
   Future<void> setAppointmentsMapByDoctorId(int doctorId) async {
     final AppointmentsService appointmentsService = AppointmentsService.instance;
@@ -122,8 +122,6 @@ class MyAppState extends ChangeNotifier {
       ).toList();
        notifyListeners();
   }
-
-
   List<Appointment> appointments = List<Appointment>.empty(growable: true);
 
   int? appointmentIdToUpdate;
@@ -131,6 +129,30 @@ class MyAppState extends ChangeNotifier {
     appointmentIdToUpdate = appointmentId;
     notifyListeners();
   }
+
+  List<AppointmentData> getBilledAppointments() {
+    return appointmentDataList
+        .where(
+            (appointmentData) =>
+        (appointmentData.cancelled == false) &&
+            (DateTime.parse(appointmentData.date).isBefore(DateTime.now())))
+        .toList();
+  }
+
+  List<AppointmentData> getScheduledAppointments() {
+    return appointmentDataList
+        .where(
+            (appointmentData) =>
+        (appointmentData.cancelled == false) &&
+            (DateTime.parse(appointmentData.date).isAfter(DateTime.now())))
+        .toList();
+  }
+
+  List<AppointmentData> getCancelledAppointments() {
+    return appointmentDataList.where(
+            (appointmentData) => appointmentData.cancelled == true).toList();
+  }
+
 }
 
 class MyHomePage extends StatefulWidget {
@@ -146,7 +168,10 @@ enum SelectedPage {
   newPatient,
   doctorForm,
   reportScreen,
-  updateAppointment
+  updateAppointment,
+  cancelledAppointments,
+  scheduledAppointments,
+  billedAppointments
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -179,6 +204,13 @@ class _MyHomePageState extends State<MyHomePage> {
         page = reportScreen;
       case SelectedPage.updateAppointment:
         page = UpdateAppointment(appointmentId: appState.appointmentIdToUpdate!);
+      case SelectedPage.billedAppointments:
+        page = AppointmentListPage(appointments: appState.getBilledAppointments(), title: "Consultas Faturadas");
+      case SelectedPage.scheduledAppointments:
+        page = AppointmentListPage(appointments: appState.getScheduledAppointments(), title: "Consultas Agendadas");
+      case SelectedPage.cancelledAppointments:
+        page = AppointmentListPage(appointments: appState.getCancelledAppointments(), title: "Consultas Canceladas");
+
     }
     if(appState.loggedUser == null){
       return LoginForm();

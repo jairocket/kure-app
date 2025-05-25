@@ -1,48 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kure/components/custom_title.dart';
 import 'package:kure/components/empty_state.dart';
-import 'package:kure/models/appointment.dart';
+import 'package:kure/models/appointmentData.dart';
 import 'package:provider/provider.dart';
-
 import '../main.dart';
 import '../services/appointments_service.dart';
 
-class AppointmentsPage extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _AppointmentsPageState();
-}
+class AppointmentListPage extends StatelessWidget {
+  final List<AppointmentData> appointments;
+  final String title;
 
-class _AppointmentsPageState extends State<AppointmentsPage> {
-  @override
-  void initState() {
-    super.initState();
-    var appState = context.read<MyAppState>();
-    
-    if (appState.loggedUser != null) {
-      appState.setAppointmentsMapByDoctorId(appState.loggedUser!.id).then((_){});
-    }
-  }
+  AppointmentListPage({super.key, required this.appointments, required this.title});
+  final currencyFormatter = NumberFormat.simpleCurrency(locale: 'pt_BR');
 
   Future<void> cancelAppointmentById(int id) async {
     final AppointmentsService appointmentsService = AppointmentsService.instance;
     await appointmentsService.cancelAppointmentById(id);
   }
 
-  Widget _buildTile(Appointment appointment) {
-    var appState = context.read<MyAppState>();
+  Widget _buildTile(AppointmentData appointment, BuildContext context) {
+    var appState = context.watch<MyAppState>();
 
     return ListTile(
       hoverColor: Colors.grey,
-      onTap: () => {
-        appState.setAppointmentIdToUpdate(appointment.id),
-        appState.setSelectedPage(SelectedPage.updateAppointment),
-      },
-      minTileHeight: 80,
-      leading: Icon(
-        size: 30,
-        Icons.access_time_filled,
-        color: const Color(0xFF2D72F6),
-      ),
+      minTileHeight: 100,
       title: Container(
         child: Flex(
           direction: Axis.horizontal,
@@ -50,48 +32,61 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
-              width: 175,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Nome",
+                    "Paciente",
                     style: TextStyle(
                       color: Colors.grey.shade700,
                       wordSpacing: 2,
                     ),
                   ),
                   Text(
-                    appointment.patient_name,
+                    appointment.patientName.split(" ").first,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                 ],
               ),
             ),
-            SizedBox(width: 1),
+            SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  "Horário",
+                  "Data",
                   style: TextStyle(color: Colors.grey.shade700, wordSpacing: 2),
                 ),
                 Text(
-                  appointment.time,
+                  "${appointment.date.split("-").last}/${appointment.date.split("-")[1]}/${appointment.date.split("-").first}",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
               ],
             ),
-            SizedBox(width: 10),
+            SizedBox(width: 2),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "Valor",
+                  style: TextStyle(color: Colors.grey.shade700, wordSpacing: 2),
+                ),
+                Text(
+                  currencyFormatter.format(appointment.price),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+              ],
+            ),
             IconButton(
-              iconSize: 30,
-              onPressed: () async => {
+              disabledColor: Colors.grey,
+              iconSize: 35,
+              onPressed: appointment.cancelled ? null : () async => {
                 await cancelAppointmentById(appointment.id),
                 await appState.setAppointmentsMapByDoctorId(appState.loggedUser!.id)
               },
-              icon: const Icon(
+              icon: Icon(
                 Icons.delete_outline_rounded,
-                color: Colors.redAccent,
+                color: appointment.cancelled ? Colors.grey: Colors.redAccent,
               ),
             ),
           ],
@@ -102,26 +97,20 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
-    if (appState.appointments.isEmpty) {
-      return EmptyState(title: "Você não tem consultas agendadas para hoje");
+    if (appointments.isEmpty) {
+      return EmptyState(title: "Nada para mostrar aqui");
     }
+
     List<Widget> appointmentList =
-        appState.appointments
-            .map((appointment) => _buildTile(appointment))
+        appointments
+            .map((appointment) => _buildTile(appointment, context))
             .toList();
 
     return Column(
       children: [
-        CustomTitle(title: "Consultas Marcadas"),
+        CustomTitle(title: title),
         SizedBox(
-          height: 50,
-          child: Text(
-           '${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}',
-            textAlign: TextAlign.start,
-            style: TextStyle(fontSize: 16),
-          )
+          height: 20,
         ),
         Expanded(
           child: Container(
@@ -134,7 +123,7 @@ class _AppointmentsPageState extends State<AppointmentsPage> {
             ),
             child: ListView.builder(
               padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-              itemCount: appState.appointments.length,
+              itemCount: appointments.length,
               itemBuilder: (context, index) {
                 return appointmentList[index];
               },

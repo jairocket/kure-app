@@ -51,7 +51,7 @@ class AppointmentsService {
         ''' 
             SELECT a.id, a.date, a.time, a.cancelled, p.name as patient_name FROM $_appointmentsTableName a
               INNER JOIN patients p ON p.id = a.patient_id 
-              WHERE a.doctor_id = ? AND a.cancelled = ? AND DATE(a.date) >= DATE('now')
+              WHERE a.doctor_id = ? AND a.cancelled = ? AND DATE(a.date) = DATE('now')
               ORDER BY a.date, a.time ASC;
           ''',
         [doctorId, _notCancelled],
@@ -135,7 +135,8 @@ class AppointmentsService {
 
     List<Map<String, Object?>> appointmentsMap = await db.rawQuery(
       """
-        SELECT a.date, a.cancelled, a.price_in_cents FROM appointments a
+        SELECT a.id, a.date, a.cancelled, a.price_in_cents, p.name as patient_name FROM appointments a
+          INNER JOIN patients p ON p.id = a.patient_id
           WHERE a.doctor_id = ?
       """,
       [doctorId],
@@ -143,9 +144,11 @@ class AppointmentsService {
 
     return appointmentsMap.map(
       (appointment) => {
+        "id": appointment["id"],
         "cancelled": appointment["cancelled"],
         "price_in_cents": appointment["price_in_cents"],
         "date": appointment["date"],
+        "patient_name": appointment["patient_name"]
       },
     );
   }

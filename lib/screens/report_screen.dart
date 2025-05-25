@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/main.dart';
-import 'package:mobile/models/appointmentData.dart';
+import 'package:kure/main.dart';
+import 'package:kure/models/appointmentData.dart';
 import 'package:provider/provider.dart';
 import '../components/chart_pie_widget.dart';
 import '../components/dashboard_card.dart';
@@ -26,16 +26,9 @@ class _ReportScreenState extends State<ReportScreen> {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
 
-    List<AppointmentData> billedAppointments = appState.appointmentDataList.where(
-            (appointmentData) => (appointmentData.cancelled == false) &&
-            (DateTime.parse(appointmentData.date).isBefore(DateTime.now()))).toList();
-
-    List<AppointmentData> scheduledAppointments = appState.appointmentDataList.where(
-            (appointmentData) => (appointmentData.cancelled == false) &&
-                (DateTime.parse(appointmentData.date).isAfter(DateTime.now()))).toList();
-
-    List<AppointmentData> cancelledAppointments = appState.appointmentDataList.where(
-            (appointmentData) => appointmentData.cancelled == true).toList();
+    List<AppointmentData> billedAppointments = appState.getBilledAppointments();
+    List<AppointmentData> scheduledAppointments = appState.getScheduledAppointments();
+    List<AppointmentData> cancelledAppointments = appState.getCancelledAppointments();
 
     List<double> billedPriceMap = billedAppointments.map((bill) => bill.price).toList();
     double totalBilledRevenue = billedAppointments
@@ -79,26 +72,36 @@ class _ReportScreenState extends State<ReportScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              Row(
+              Flex(
+                direction: Axis.horizontal,
                 children: [
-                  DashboardCard(
-                    value: billedAppointments.length,
-                    label: "Consultas Faturadas",
-                    icon: Icons.calendar_month,
-                    color: Colors.blue,
-                  ),
-                  DashboardCard(
-                    value: scheduledAppointments.length,
-                    label: "Consultas Previstas",
-                    icon: Icons.remove_red_eye,
-                    color: Colors.green,
-                  ),
-                  DashboardCard(
-                    value: cancelledAppointments.length,
-                    label: "Consultas Canceladas",
-                    icon: Icons.cancel,
-                    color: Colors.red,
-                  ),
+                    Expanded(
+                        child: DashboardCard(
+                          value: billedAppointments.length,
+                          label: "Consultas Faturadas",
+                          icon: Icons.calendar_month,
+                          color: Colors.blue,
+                          ontap: () => appState.setSelectedPage(SelectedPage.billedAppointments),
+                        ),
+                    ),
+                    Expanded(
+                      child: DashboardCard(
+                          value: scheduledAppointments.length,
+                          label: "Consultas Previstas",
+                          icon: Icons.remove_red_eye,
+                          color: Colors.green,
+                          ontap: () => appState.setSelectedPage(SelectedPage.scheduledAppointments),
+                        ),
+                    ),
+                    Expanded(
+                      child: DashboardCard(
+                          value: cancelledAppointments.length,
+                          label: "Consultas Canceladas",
+                          icon: Icons.cancel,
+                          color: Colors.red,
+                          ontap: () => appState.setSelectedPage(SelectedPage.cancelledAppointments),
+                        ),
+                    )
                 ],
               ),
               const SizedBox(height: 20),

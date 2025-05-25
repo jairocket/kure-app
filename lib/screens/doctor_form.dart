@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:mobile/extensions/extensions.dart';
-import 'package:mobile/services/doctor_service.dart';
+import 'package:kure/extensions/extensions.dart';
+import 'package:kure/services/doctor_service.dart';
 import '../components/custom_title.dart';
 import '../components/custom_text_input_field.dart';
 import '../main.dart';

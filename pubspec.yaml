@@ -1,4 +1,4 @@
-name: mobile
+name: kure
 description: "App for Managing medical appointments"
 publish_to: 'none'
 version: 0.1.0
