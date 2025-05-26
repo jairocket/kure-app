@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 
 class EmptyState extends StatelessWidget {
 
+  final String title;
+
+  EmptyState({super.key, required this.title});
+
   @override
   Widget build(BuildContext context) {
 
@@ -21,7 +25,7 @@ class EmptyState extends StatelessWidget {
           TweenAnimationBuilder(
               child: Center(
                 child: Text(
-                  "Você ainda não tem consultas agendadas",
+                  title,
                   style: TextStyle(fontSize: 19, color: Colors.black87),
                 ),
               ),

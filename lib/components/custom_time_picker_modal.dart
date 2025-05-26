@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/services/appointments_service.dart';
+import 'package:kure/services/appointments_service.dart';
 import 'package:provider/provider.dart';
 
 import '../main.dart';

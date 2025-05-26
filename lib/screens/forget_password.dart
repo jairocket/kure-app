@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/components/custom_text_input_field.dart';
-import 'package:mobile/components/custom_title.dart';
-import 'package:mobile/extensions/extensions.dart';
-import 'package:mobile/services/doctor_service.dart';
-
-String? email, password;
-
-final TextEditingController emailController = TextEditingController();
-final TextEditingController newPasswordController = TextEditingController();
-final TextEditingController confirmPasswordController = TextEditingController();
+import 'package:kure/components/custom_text_input_field.dart';
+import 'package:kure/components/custom_title.dart';
+import 'package:kure/extensions/extensions.dart';
+import 'package:kure/services/doctor_service.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   const ChangePasswordPage({super.key});
@@ -18,6 +12,12 @@ class ChangePasswordPage extends StatefulWidget {
 }
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
+  String? email, password;
+
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
   final _formKey = GlobalKey<FormState>();
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;

@@ -3,14 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:mobile/components/custom_time_picker_modal.dart';
-import 'package:mobile/components/custom_title.dart';
-import 'package:mobile/components/custom_text_input_field.dart';
-import 'package:mobile/components/custom_time_picker.dart';
-import 'package:mobile/components/date_input.dart';
-import 'package:mobile/extensions/extensions.dart';
-import 'package:mobile/services/appointments_service.dart';
-import 'package:mobile/services/patient_service.dart';
+import 'package:kure/components/custom_time_picker_modal.dart';
+import 'package:kure/components/custom_title.dart';
+import 'package:kure/components/custom_text_input_field.dart';
+import 'package:kure/components/custom_time_picker.dart';
+import 'package:kure/components/date_input.dart';
+import 'package:kure/extensions/extensions.dart';
+import 'package:kure/services/appointments_service.dart';
+import 'package:kure/services/patient_service.dart';
 import 'package:provider/provider.dart';
 import 'package:currency_textfield/currency_textfield.dart';
 
@@ -271,7 +271,6 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                           );
                           return;
                         }
-
                         CustomTimePickerModal.show(
                           context: context,
                           date: formatDate(appointmentDate!),
@@ -311,7 +310,14 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                           },
                       inputFormatters: [],
                     ),
-                    SizedBox(height: 30),
+                    const SizedBox(height: 20),
+                    TextButton(
+                      onPressed: () {
+                        _cleanInputData;
+                      },
+                      child: const Text("Limpar campos", style: TextStyle(color:  const Color(0xFF2D72F6), fontSize: 16)),
+                    ),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         final isValid = _formKey.currentState!.validate();
@@ -358,34 +364,6 @@ class _NewAppointmentsPageState extends State<NewAppointmentsPage> {
                       child: Text(
                         "Agendar Consulta",
                         style: TextStyle(fontSize: 16),
-                      ),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                        onPressed: _cleanInputData,
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 70,
-                            vertical: 16,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
-                            side: BorderSide(
-                              color: const Color(0xFF2D72F6),
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          "Limpar campos",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: const Color(0xFF2D72F6),
-                          ),
-                        ),
                       ),
                     ),
                   ],

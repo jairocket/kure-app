@@ -2,28 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:mobile/components/custom_title.dart';
-import 'package:mobile/components/custom_gender_options.dart';
-import 'package:mobile/components/date_input.dart';
-import 'package:mobile/extensions/extensions.dart';
-import 'package:mobile/services/cep_service.dart';
-import 'package:mobile/services/patient_service.dart';
+import 'package:kure/components/custom_title.dart';
+import 'package:kure/components/custom_gender_options.dart';
+import 'package:kure/components/date_input.dart';
+import 'package:kure/extensions/extensions.dart';
+import 'package:kure/services/cep_service.dart';
+import 'package:kure/services/patient_service.dart';
 import '../components/custom_text_input_field.dart';
 import 'package:intl/intl.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-
-final TextEditingController _nameController = TextEditingController();
-final TextEditingController _cpfController = TextEditingController();
-final TextEditingController _phoneController = TextEditingController();
-final TextEditingController _birthdayController = TextEditingController();
-final TextEditingController _genderController = TextEditingController();
-final TextEditingController _cepController = TextEditingController();
-final TextEditingController _streetController = TextEditingController();
-final TextEditingController _streetNumberController = TextEditingController();
-final TextEditingController _complementController = TextEditingController();
-final TextEditingController _neighborhoodController = TextEditingController();
-final TextEditingController _cityController = TextEditingController();
-final TextEditingController _stateController = TextEditingController();
 
 final _cpfFormatter = MaskTextInputFormatter(
   mask: '###.###.###-##',
@@ -48,6 +35,21 @@ class PatientForm extends StatefulWidget {
 }
 
 class _PatientFormState extends State<PatientForm> {
+  bool isClearing = false;
+
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _cpfController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _birthdayController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
+  final TextEditingController _cepController = TextEditingController();
+  final TextEditingController _streetController = TextEditingController();
+  final TextEditingController _streetNumberController = TextEditingController();
+  final TextEditingController _complementController = TextEditingController();
+  final TextEditingController _neighborhoodController = TextEditingController();
+  final TextEditingController _cityController = TextEditingController();
+  final TextEditingController _stateController = TextEditingController();
+
   GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   String? name, cpf, phoneNumber, gender, birthday;
   String? cep,
@@ -127,6 +129,44 @@ class _PatientFormState extends State<PatientForm> {
         _birthdayController.text = DateFormat.yMd("pt_BR").format(_picked);
       });
     }
+  }
+
+  void _cleanInputData() {
+    isClearing = true;
+
+    _formkey.currentState!.reset();
+
+    _nameController.clear();
+    _cpfController.clear();
+    _birthdayController.clear();
+    _phoneController.clear();
+    _cepController.clear();
+    _streetController.clear();
+    _streetNumberController.clear();
+    _complementController.clear();
+    _neighborhoodController.clear();
+    _stateController.clear();
+    _cityController.clear();
+    _genderController.clear();
+
+    setState(() {
+      name = null;
+      cpf = null;
+      birthday = null;
+      phoneNumber = null;
+      cep = null;
+      street = null;
+      streetNumber = null;
+      complement = null;
+      neighborhood = null;
+      city = null;
+      state = null;
+      gender = null;
+    });
+
+    Future.delayed(Duration(milliseconds: 100), () {
+      isClearing = false;
+    });
   }
 
   @override
@@ -250,10 +290,13 @@ class _PatientFormState extends State<PatientForm> {
                                 return null;
                               },
                               onChanged: (value) {
+                                if(isClearing) return;
                                 if(value.length == 9) {
                                   getAddress();
                                 }
+
                               },
+                              onSuffixTap: () => getAddress(),
                               onSaved:
                                   (value) => setState(() {
                                     if (value != null) {
@@ -464,33 +507,7 @@ class _PatientFormState extends State<PatientForm> {
                                     ),
                                   ),
                                 );
-
-                            _formkey.currentState!.reset();
-                            _nameController.clear();
-                            _cpfController.clear();
-                            _phoneController.clear();
-                            _birthdayController.clear();
-                            _genderController.clear();
-                            _stateController.clear();
-                            _streetNumberController.clear();
-                            _complementController.clear();
-                            _cepController.clear();
-                            _cityController.clear();
-                            _stateController.clear();
-
-                            setState(() {
-                              name = null;
-                              cpf = null;
-                              phoneNumber = null;
-                              gender = null;
-                              birthday = null;
-                              street = null;
-                              streetNumber = null;
-                              complement = null;
-                              cep = null;
-                              city = null;
-                              state = null;
-                            });
+                            _cleanInputData();
                           }
                         },
                         color: Color(0xFF2D72F6),
