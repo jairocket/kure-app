@@ -138,6 +138,7 @@ class AppointmentsService {
         SELECT a.id, a.time, a.date, a.cancelled, a.price_in_cents, p.name as patient_name, p.cpf as cpf FROM appointments a
           INNER JOIN patients p ON p.id = a.patient_id
           WHERE a.doctor_id = ?
+          ORDER BY a.date, a.time ASC;
       """,
       [doctorId],
     );

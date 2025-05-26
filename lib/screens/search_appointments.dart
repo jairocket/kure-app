@@ -42,7 +42,7 @@ class _SearchAppointmentsState extends State<SearchAppointments> {
 
     return ListTile(
       hoverColor: Colors.grey,
-      onTap: () => {
+      onTap: appointment.cancelled ? null : () => {
         appState.setAppointmentIdToUpdate(appointment.id),
         appState.setSelectedPage(SelectedPage.updateAppointment),
       },
@@ -95,7 +95,7 @@ class _SearchAppointmentsState extends State<SearchAppointments> {
                       ? null
                       : () async => {
                         await cancelAppointmentById(appointment.id),
-                        await appState.setAppointmentsMapByDoctorId(
+                        await appState.setAppointmentDataList(
                           appState.loggedUser!.id,
                         ),
                       },

@@ -35,6 +35,8 @@ class PatientForm extends StatefulWidget {
 }
 
 class _PatientFormState extends State<PatientForm> {
+  bool isClearing = false;
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _cpfController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -127,6 +129,44 @@ class _PatientFormState extends State<PatientForm> {
         _birthdayController.text = DateFormat.yMd("pt_BR").format(_picked);
       });
     }
+  }
+
+  void _cleanInputData() {
+    isClearing = true;
+
+    _formkey.currentState!.reset();
+
+    _nameController.clear();
+    _cpfController.clear();
+    _birthdayController.clear();
+    _phoneController.clear();
+    _cepController.clear();
+    _streetController.clear();
+    _streetNumberController.clear();
+    _complementController.clear();
+    _neighborhoodController.clear();
+    _stateController.clear();
+    _cityController.clear();
+    _genderController.clear();
+
+    setState(() {
+      name = null;
+      cpf = null;
+      birthday = null;
+      phoneNumber = null;
+      cep = null;
+      street = null;
+      streetNumber = null;
+      complement = null;
+      neighborhood = null;
+      city = null;
+      state = null;
+      gender = null;
+    });
+
+    Future.delayed(Duration(milliseconds: 100), () {
+      isClearing = false;
+    });
   }
 
   @override
@@ -250,6 +290,7 @@ class _PatientFormState extends State<PatientForm> {
                                 return null;
                               },
                               onChanged: (value) {
+                                if(isClearing) return;
                                 if(value.length == 9) {
                                   getAddress();
                                 }
@@ -466,35 +507,7 @@ class _PatientFormState extends State<PatientForm> {
                                     ),
                                   ),
                                 );
-
-                            _formkey.currentState!.reset();
-                            _nameController.clear();
-                            _cpfController.clear();
-                            _phoneController.clear();
-                            _birthdayController.clear();
-                            _genderController.clear();
-                            _stateController.clear();
-                            _stateController.text = "";
-                            _streetNumberController.clear();
-                            _complementController.clear();
-                            _cepController.clear();
-                            _cityController.clear();
-                            _streetController.clear();
-                            _streetController.text = "";
-
-                            setState(() {
-                              name = null;
-                              cpf = null;
-                              phoneNumber = null;
-                              gender = null;
-                              birthday = null;
-                              street = null;
-                              streetNumber = null;
-                              complement = null;
-                              cep = null;
-                              city = null;
-                              state = null;
-                            });
+                            _cleanInputData();
                           }
                         },
                         color: Color(0xFF2D72F6),
