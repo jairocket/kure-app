@@ -1,5 +1,6 @@
 
-#  ![Screenshot from 2025-05-24 12-46-01](https://github.com/user-attachments/assets/a612d6c4-e1d6-4cef-96c0-d645ad2b1adf) Kure
+![Screenshot from 2025-05-24 12-46-01](https://github.com/user-attachments/assets/a612d6c4-e1d6-4cef-96c0-d645ad2b1adf) 
+# Kure
 
 Sua aplicação para gerenciamento de consultas médicas.
 
